@@ -11,11 +11,18 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           key: dependency-cache-
 
-      - run: yarn
+      - run: yarn install
 
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
 
-      - run: yarn test
+      - run:
+          command: yarn test --ci --testResultsProcessor="jest-junit"
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+      - run: yarn build
+
+      - store_test_results:
+          path: reports/junit
