@@ -1,0 +1,39 @@
+{
+  "name": "my-contributions.github.io",
+  "version": "0.0.1",
+  "description": "Show off your open source contributions",
+  "main": "index.js",
+  "homepage": "https://my-contributions.github.io",
+  "repository": "github:my-contributions/my-contributions.github.io",
+  "author": "Elisey Zanko <elisey.zanko@gmail.com>",
+  "license": "GPL-3.0",
+  "private": true,
+  "scripts": {
+    "build": "webpack --config webpack.prod.js",
+    "start": "webpack-dev-server --open --config webpack.dev.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-jest": "^21.2.0",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "jest": "^21.2.1",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.3",
+    "webpack-merge": "^4.1.0",
+    "whatwg-fetch": "^2.0.3"
+  },
+  "babel": {
+    "presets": [
+      "env",
+      "react"
+    ]
+  }
+}
