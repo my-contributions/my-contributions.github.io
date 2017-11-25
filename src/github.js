@@ -16,14 +16,8 @@ function htmlURL(type, author, repo) {
     return 'https://github.com/search?utf8=✓&q=' + q;
 }
 
-async function aggregatePullRequests(author) {
-    if (/[ :]/.test(author)) {
-        throw new Error('Invalid author');
-    }
-
-    const pullRequests = await fetchPullRequests(author);
-
-    const reduced = pullRequests.items.reduce((result, value) => {
+function reducePullRequests(items) {
+    return items.reduce((result, value) => {
         const repository_url = value.repository_url;
         let repository = result[repository_url] || {
             open: 0,
@@ -39,8 +33,10 @@ async function aggregatePullRequests(author) {
         result[repository_url] = repository;
         return result;
     }, {});
+}
 
-    const promises = Object.entries(reduced).map(async (entry) => {
+async function fetchRepositoryData(items, author) {
+    const promises = Object.entries(items).map(async (entry) => {
         const repository = await fetchJSON(entry[0]);
         return {
             repository: {
@@ -55,8 +51,11 @@ async function aggregatePullRequests(author) {
         };
     });
 
-    const mapped = await Promise.all(promises);
-    const sorted = mapped.sort((a, b) => {
+    return await Promise.all(promises);
+}
+
+function sort(items) {
+    return items.sort((a, b) => {
         const a_count = a.open + a.closed;
         const b_count = b.open + b.closed;
 
@@ -65,8 +64,18 @@ async function aggregatePullRequests(author) {
         }
         return a_count < b_count;
     });
+}
 
-    return sorted;
+async function aggregatePullRequests(author) {
+    if (/[ :]/.test(author)) {
+        throw new Error('Invalid author');
+    }
+
+    const pullRequests = await fetchPullRequests(author);
+    const reduced = reducePullRequests(pullRequests.items);
+    const augmented = await fetchRepositoryData(reduced, author);
+
+    return sort(augmented);
 }
 
 export default aggregatePullRequests;
