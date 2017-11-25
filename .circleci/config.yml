@@ -18,6 +18,7 @@ jobs:
           paths:
             - node_modules
 
+      - run: yarn lint --format junit -o reports/junit/js-lint-results.xml
       - run:
           command: yarn test --ci --testResultsProcessor="jest-junit"
           environment:

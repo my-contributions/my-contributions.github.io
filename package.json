@@ -11,7 +11,8 @@
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "start": "webpack-dev-server --open --config webpack.dev.js",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint src"
   },
   "dependencies": {
     "react": "^16.0.0",
@@ -24,6 +25,8 @@
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
+    "eslint": "^4.11.0",
+    "eslint-plugin-react": "^7.5.1",
     "jest": "^21.2.1",
     "jest-junit": "^3.1.0",
     "webpack": "^3.8.1",

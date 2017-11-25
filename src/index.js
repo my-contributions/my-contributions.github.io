@@ -15,7 +15,7 @@ class RepositoryPullRequests extends React.PureComponent {
             <div>
                 <a href={this.props.url}>{summary}</a>
             </div>
-        )
+        );
     }
 }
 
@@ -71,7 +71,6 @@ class PullRequests extends React.PureComponent {
             });
         }
         catch(e) {
-            console.error(e);
             this.setState({
                 hasError: true,
             });
