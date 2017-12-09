@@ -36,7 +36,6 @@
             "error",
             "always"
         ],
-        "react/prop-types": "off",
         "comma-dangle": [
             "error",
             "always-multiline"

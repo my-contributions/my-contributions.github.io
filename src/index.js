@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import aggregatePullRequests from './github';
@@ -19,6 +20,12 @@ class RepositoryPullRequests extends React.PureComponent {
     }
 }
 
+RepositoryPullRequests.propTypes = {
+    closed: PropTypes.number.isRequired,
+    open: PropTypes.number.isRequired,
+    url: PropTypes.string.isRequired,
+};
+
 class Repository extends React.PureComponent {
     render() {
         return (
@@ -29,6 +36,15 @@ class Repository extends React.PureComponent {
         );
     }
 }
+
+Repository.propTypes = {
+    item: PropTypes.shape({
+        full_name: PropTypes.string.isRequired,
+        html_url: PropTypes.string.isRequired,
+        language: PropTypes.string.isRequired,
+        stargazers_count: PropTypes.number.isRequired,
+    }).isRequired,
+};
 
 class PullRequestsList extends React.PureComponent {
     render() {
@@ -41,6 +57,10 @@ class PullRequestsList extends React.PureComponent {
         return <ul>{listItems}</ul>;
     }
 }
+
+PullRequestsList.propTypes = {
+    items: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
 
 class PullRequests extends React.PureComponent {
     constructor(props) {
