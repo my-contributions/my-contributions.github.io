@@ -19,7 +19,7 @@ function htmlURL(type, author, repo) {
 function reducePullRequests(items) {
     return items.reduce((result, value) => {
         const repository_url = value.repository_url;
-        let repository = result[repository_url] || {
+        const repository = result[repository_url] || {
             open: 0,
             closed: 0,
         };
