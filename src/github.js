@@ -1,14 +1,60 @@
-async function fetchJSON(url) {
+function getLink(headers) {
+    const result = {
+        next: null,
+        last: null,
+        first: null,
+        prev: null,
+    };
+
+    const link = headers.get('Link');
+    if (link == null)
+        return result;
+
+    const urls = /<([^<>]+)>; rel="(next|last|first|prev)"/.exec(link);
+    if (urls == null || urls.length < 3) {
+        throw new Error('Pagination error');
+    }
+
+    let i = urls.length - 1;
+    while (i) {
+        result[urls[i]] = urls[i - 1];
+        i -= 2;
+    }
+
+    return result;
+}
+
+async function fetchURL(url) {
     const response = await fetch(url);
     if (!response.ok) {
         throw new Error('Error fetching ' + url);
     }
+    return response;
+}
+
+async function fetchJSON(url) {
+    const response = await fetchURL(url);
     return await response.json();
+}
+
+async function fetchPages(url, items) {
+    const response = await fetchURL(url);
+    const result = await response.json();
+    if (items) {
+        Array.prototype.push.apply(items, result.items);
+    }
+
+    const link = getLink(response.headers);
+    if (link.next) {
+        await fetchPages(link.next, result.items);
+    }
+
+    return result;
 }
 
 async function fetchPullRequests(author) {
     const q = encodeURIComponent('type:pr author:' + author);
-    return await fetchJSON('https://api.github.com/search/issues?q=' + q);
+    return await fetchPages('https://api.github.com/search/issues?per_page=100&q=' + q);
 }
 
 function htmlURL(type, author, repo) {
@@ -19,7 +65,7 @@ function htmlURL(type, author, repo) {
 function reducePullRequests(items) {
     return items.reduce((result, value) => {
         const repository_url = value.repository_url;
-        let repository = result[repository_url] || {
+        const repository = result[repository_url] || {
             open: 0,
             closed: 0,
         };
