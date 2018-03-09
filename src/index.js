@@ -5,13 +5,7 @@ import aggregatePullRequests from './github';
 
 class RepositoryPullRequests extends React.PureComponent {
     render() {
-        let summary = `${this.props.closed} closed, ${this.props.open} open`;
-        if (this.props.open && !this.props.closed) {
-            summary = `${this.props.open} open`;
-        }
-        else if (this.props.closed && !this.props.open) {
-            summary = `${this.props.closed} closed`;
-        }
+        const summary = `${this.props.merged} merged, ${this.props.closed} closed, ${this.props.open} open`;
         return (
             <div>
                 <a href={this.props.url}>{summary}</a>
@@ -21,6 +15,7 @@ class RepositoryPullRequests extends React.PureComponent {
 }
 
 RepositoryPullRequests.propTypes = {
+    merged: PropTypes.number.isRequired,
     closed: PropTypes.number.isRequired,
     open: PropTypes.number.isRequired,
     url: PropTypes.string.isRequired,
@@ -55,7 +50,7 @@ class PullRequestsList extends React.PureComponent {
         const listItems = this.props.items.map((item) =>
             <li key={item.repository.full_name}>
                 <Repository item={item.repository}/>
-                <RepositoryPullRequests url={item.html_url} closed={item.closed} open={item.open}/>
+                <RepositoryPullRequests url={item.html_url} merged={item.merged} closed={item.closed} open={item.open}/>
             </li>
         );
         return <ul>{listItems}</ul>;
