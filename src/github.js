@@ -52,9 +52,23 @@ async function fetchPages(url, items) {
     return result;
 }
 
+async function isMerged(url) {
+    const pr = await fetchJSON(url);
+    return pr.merged;
+}
+
 async function fetchPullRequests(author) {
     const q = encodeURIComponent('type:pr author:' + author);
-    return await fetchPages('https://api.github.com/search/issues?per_page=100&q=' + q);
+    const pullRequests = await fetchPages('https://api.github.com/search/issues?per_page=100&q=' + q);
+
+    const promises = pullRequests.items.map(async (item) => {
+        if (item.state == 'closed' && await isMerged(item.pull_request.url)) {
+            item.state = 'merged';
+        }
+        return item;
+    });
+
+    return await Promise.all(promises);
 }
 
 function htmlURL(type, author, repo) {
@@ -64,19 +78,16 @@ function htmlURL(type, author, repo) {
 
 function reducePullRequests(items) {
     return items.reduce((result, value) => {
-        const repository_url = value.repository_url;
-        const repository = result[repository_url] || {
+        const url = value.repository_url;
+        const repository = result[url] || {
             open: 0,
+            merged: 0,
             closed: 0,
         };
 
-        if (value.state == 'open') {
-            repository.open += 1;
-        } else {
-            repository.closed += 1;
-        }
+        repository[value.state] += 1;
+        result[url] = repository;
 
-        result[repository_url] = repository;
         return result;
     }, {});
 }
@@ -93,6 +104,7 @@ async function fetchRepositoryData(items, author) {
             },
             open: entry[1].open,
             closed: entry[1].closed,
+            merged: entry[1].merged,
             html_url: htmlURL('pr', author, repository.full_name),
         };
     });
@@ -102,13 +114,13 @@ async function fetchRepositoryData(items, author) {
 
 function sort(items) {
     return items.sort((a, b) => {
-        const a_count = a.open + a.closed;
-        const b_count = b.open + b.closed;
+        const aCount = a.open + a.closed + a.merged;
+        const bCount = b.open + b.closed + b.merged;
 
-        if (a_count == b_count) {
+        if (aCount == bCount) {
             return a.repository.stargazers_count < b.repository.stargazers_count;
         }
-        return a_count < b_count;
+        return aCount < bCount;
     });
 }
 
@@ -118,7 +130,7 @@ async function aggregatePullRequests(author) {
     }
 
     const pullRequests = await fetchPullRequests(author);
-    const reduced = reducePullRequests(pullRequests.items);
+    const reduced = reducePullRequests(pullRequests);
     const augmented = await fetchRepositoryData(reduced, author);
 
     return sort(augmented);

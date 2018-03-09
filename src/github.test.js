@@ -43,6 +43,7 @@ describe('aggregatePullRequests', () => {
                 return mockResponse({items: [
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/1'},
                         state: 'open',
                     },
                 ]}, {
@@ -56,6 +57,7 @@ describe('aggregatePullRequests', () => {
                 return mockResponse({items: [
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/2'},
                         state: 'closed',
                     },
                 ]}, {
@@ -72,6 +74,10 @@ describe('aggregatePullRequests', () => {
                     stargazers_count: 1,
                     language: 'JavaScript',
                 });
+            case 'https://api.github.com/repos/user/repo1/pulls/2':
+                return mockResponse({
+                    'merged': false,
+                });
             default:
                 return { ok: false };
             }
@@ -87,6 +93,7 @@ describe('aggregatePullRequests', () => {
                 },
                 open: 1,
                 closed: 1,
+                merged: 0,
                 html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%201',
             },
         ];
@@ -101,33 +108,56 @@ describe('aggregatePullRequests', () => {
                 return mockResponse({items: [
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/1'},
                         state: 'open',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/2'},
                         state: 'closed',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/3'},
                         state: 'closed',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo2',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo2/pulls/1'},
                         state: 'open',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo2',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo2/pulls/2'},
                         state: 'open',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo3',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo3/pulls/1'},
                         state: 'closed',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo3',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo3/pulls/2'},
                         state: 'closed',
                     },
                 ]});
+            case 'https://api.github.com/repos/user/repo1/pulls/2':
+                return mockResponse({
+                    'merged': false,
+                });
+            case 'https://api.github.com/repos/user/repo1/pulls/3':
+                return mockResponse({
+                    'merged': false,
+                });
+            case 'https://api.github.com/repos/user/repo3/pulls/1':
+                return mockResponse({
+                    'merged': false,
+                });
+            case 'https://api.github.com/repos/user/repo3/pulls/2':
+                return mockResponse({
+                    'merged': true,
+                });
             case 'https://api.github.com/repos/user/repo1':
                 return mockResponse({
                     html_url: 'https://github.com/user/repo1',
@@ -164,6 +194,7 @@ describe('aggregatePullRequests', () => {
                 },
                 open: 1,
                 closed: 2,
+                merged: 0,
                 html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%201',
             },
             {
@@ -175,6 +206,7 @@ describe('aggregatePullRequests', () => {
                 },
                 open: 2,
                 closed: 0,
+                merged: 0,
                 html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%202',
             },
             {
@@ -185,7 +217,8 @@ describe('aggregatePullRequests', () => {
                     language: 'Go',
                 },
                 open: 0,
-                closed: 2,
+                closed: 1,
+                merged: 1,
                 html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%203',
             },
         ];
