@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import aggregatePullRequests from './github';
+import {aggregatePullRequests, AuthorizationError, getAccessToken} from './github';
+import {getRandomString} from './utils';
 
 class RepositoryPullRequests extends React.PureComponent {
     render() {
@@ -66,10 +67,21 @@ class PullRequests extends React.PureComponent {
         super(props);
 
         this.state = {
-            author: '',
-            hasError: false,
+            error: null,
             pullRequests: null,
         };
+    }
+
+    static authorize(redirectUri) {
+        const state = getRandomString();
+        localStorage.setItem('state', state);
+
+        window.location.replace(
+            'https://github.com/login/oauth/authorize?' +
+            'client_id=' + OAUTH_CLIENT_ID + '&' +
+            'state=' + encodeURIComponent(state) + '&' +
+            'redirect_uri=' + encodeURIComponent(redirectUri)
+        );
     }
 
     async componentWillMount() {
@@ -80,25 +92,64 @@ class PullRequests extends React.PureComponent {
             return;
         }
 
-        this.setState({
-            author: author,
-        });
+        let accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            const code = params.get('code');
+            if (!code) {
+                return PullRequests.authorize(window.location.href);
+            }
+
+            const state = params.get('state');
+            if (!state) {
+                this.setState({
+                    error: 'Missing state',
+                });
+                return;
+            }
+
+            const localState = localStorage.getItem('state');
+            if (localState != state) {
+                this.setState({
+                    error: 'Unknown state',
+                });
+                return;
+            }
+
+            try {
+                accessToken = await getAccessToken(code);
+            }
+            catch (e) {
+                this.setState({
+                    error: e.toString(),
+                });
+            }
+
+            params.delete('code');
+            params.delete('state');
+            window.history.replaceState({}, document.title, '?' + params.toString());
+
+            localStorage.setItem('access_token', accessToken);
+        }
 
         try {
             this.setState({
-                pullRequests: await aggregatePullRequests(author),
+                pullRequests: await aggregatePullRequests(author, accessToken),
             });
         }
         catch(e) {
+            if (e instanceof AuthorizationError) {
+                localStorage.removeItem('access_token');
+                return PullRequests.authorize(window.location.href);
+            }
             this.setState({
-                hasError: true,
+                error: e.toString(),
             });
         }
     }
 
     render() {
-        if (this.state.hasError) {
-            return 'Something went wrong';
+        if (this.state.error) {
+            return this.state.error;
         }
 
         if (this.state.pullRequests) {

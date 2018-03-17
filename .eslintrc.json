@@ -4,6 +4,10 @@
         "es6": true,
         "jest": true
     },
+    "globals": {
+        "OAUTH_GATEWAY_URL": "https://exmaple.com",
+        "OAUTH_CLIENT_ID": "1234"
+    },
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended"

@@ -1,7 +1,7 @@
 {
   "name": "my-contributions.github.io",
   "version": "0.0.1",
-  "description": "Show off your open source contributions",
+  "description": "Show off your open source contributions and check out others",
   "main": "index.js",
   "homepage": "https://my-contributions.github.io",
   "repository": "github:my-contributions/my-contributions.github.io",
@@ -23,6 +23,7 @@
     "babel-core": "^6.26.0",
     "babel-jest": "^21.2.0",
     "babel-loader": "^7.1.2",
+    "babel-plugin-transform-builtin-extend": "^1.1.2",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
@@ -39,9 +40,23 @@
     "presets": [
       "env",
       "react"
+    ],
+    "plugins": [
+      [
+        "babel-plugin-transform-builtin-extend",
+        {
+          "globals": [
+            "Error"
+          ]
+        }
+      ]
     ]
   },
   "jest": {
+    "globals": {
+      "OAUTH_GATEWAY_URL": "https://exmaple.com/",
+      "OAUTH_CLIENT_ID": "1234"
+    },
     "collectCoverage": true,
     "coveragePathIgnorePatterns": [
       "<rootDir>/dist/",
