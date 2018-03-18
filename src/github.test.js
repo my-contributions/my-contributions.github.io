@@ -1,8 +1,12 @@
 import 'whatwg-fetch';
-import aggregatePullRequests from './github';
+import {aggregatePullRequests, AuthorizationError, getAccessToken} from './github';
 
 beforeAll(() => {
     window.fetch = jest.fn();
+});
+
+beforeEach(() => {
+    window.fetch.mockReset();
 });
 
 function mockResponse(body, headers = {}) {
@@ -15,25 +19,82 @@ function mockResponse(body, headers = {}) {
     );
 }
 
+describe('getAccessToken', () => {
+    const apiUrl = `${OAUTH_GATEWAY_URL}?client_id=${OAUTH_CLIENT_ID}`;
+
+    it('handles HTTP errors', async () => {
+        window.fetch.mockReturnValueOnce({ ok: false });
+
+        const error = new Error(
+            'Could not fetch ' +  apiUrl + '&code=code',
+        );
+        await expect(getAccessToken('code')).rejects.toEqual(error);
+    });
+
+    it('handles error in response', async () => {
+        window.fetch.mockImplementation((url) => {
+            switch (url) {
+            case apiUrl + '&code=code':
+                return mockResponse({error: 'test'});
+            }
+        });
+
+        const error = new Error('Unable to get access token');
+        await expect(getAccessToken('code')).rejects.toEqual(error);
+    });
+
+    it('handles empty token', async () => {
+        window.fetch.mockImplementation((url) => {
+            switch (url) {
+            case apiUrl + '&code=code':
+                return mockResponse({});
+            }
+        });
+
+        const error = new Error('Unable to get access token');
+        await expect(getAccessToken('code')).rejects.toEqual(error);
+    });
+
+    it('returns token', async () => {
+        const token = 'token';
+
+        window.fetch.mockImplementation((url) => {
+            switch (url) {
+            case apiUrl + '&code=code':
+                return mockResponse({access_token: token});
+            }
+        });
+
+        await expect(getAccessToken('code')).resolves.toEqual(token);
+    });
+});
+
 describe('aggregatePullRequests', () => {
     it('handles HTTP errors', async () => {
         window.fetch.mockReturnValueOnce({ ok: false });
 
-        const error = new Error('Error fetching https://api.github.com/search/issues?per_page=100&q=type%3Apr%20author%3Atest');
-        await expect(aggregatePullRequests('test')).rejects.toEqual(error);
+        const error = new Error('Could not fetch https://api.github.com/search/issues?per_page=100&q=type%3Apr%20author%3Atest');
+        await expect(aggregatePullRequests('test', 'token')).rejects.toEqual(error);
+    });
+
+    it('handles authorization error', async () => {
+        window.fetch.mockReturnValueOnce({ status: 401 });
+
+        const error = new AuthorizationError();
+        await expect(aggregatePullRequests('test', 'token')).rejects.toEqual(error);
     });
 
     it('tests author', async () => {
         const error = new Error('Invalid author');
-        await expect(aggregatePullRequests('test:')).rejects.toEqual(error);
-        await expect(aggregatePullRequests(' test')).rejects.toEqual(error);
+        await expect(aggregatePullRequests('test:', 'token')).rejects.toEqual(error);
+        await expect(aggregatePullRequests(' test', 'token')).rejects.toEqual(error);
     });
 
     it('handles pagination errors', async () => {
         window.fetch.mockReturnValueOnce(mockResponse({}, {'Link': 'error'}));
 
         const error = new Error('Pagination error');
-        await expect(aggregatePullRequests('test')).rejects.toEqual(error);
+        await expect(aggregatePullRequests('test', 'token')).rejects.toEqual(error);
     });
 
     it('fetches pages', async () => {
@@ -98,7 +159,7 @@ describe('aggregatePullRequests', () => {
             },
         ];
 
-        await expect(aggregatePullRequests('test')).resolves.toEqual(result);
+        await expect(aggregatePullRequests('test', 'token')).resolves.toEqual(result);
     });
 
     it('aggregates', async () => {
@@ -223,6 +284,6 @@ describe('aggregatePullRequests', () => {
             },
         ];
 
-        await expect(aggregatePullRequests('test')).resolves.toEqual(result);
+        await expect(aggregatePullRequests('test', 'token')).resolves.toEqual(result);
     });
 });
