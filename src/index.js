@@ -122,6 +122,7 @@ class PullRequests extends React.PureComponent {
                 this.setState({
                     error: e.toString(),
                 });
+                return;
             }
 
             params.delete('code');
