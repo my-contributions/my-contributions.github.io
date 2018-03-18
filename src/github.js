@@ -21,6 +21,8 @@ class GitHub {
         this._authorization = {Authorization: 'token ' + accessToken};
     }
 
+    // Parses the Link header and returns a corresponding object.
+    // Please see https://developer.github.com/v3/guides/traversing-with-pagination/.
     static _getPageLinks(headers) {
         const result = {
             next: null,
