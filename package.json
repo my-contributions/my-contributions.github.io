@@ -40,19 +40,10 @@
     "presets": [
       "env",
       "react"
-    ],
-    "plugins": [
-      [
-        "babel-plugin-transform-builtin-extend",
-        {
-          "globals": [
-            "Error"
-          ]
-        }
-      ]
     ]
   },
   "jest": {
+    "testURL": "http://localhost",
     "globals": {
       "OAUTH_GATEWAY_URL": "https://exmaple.com/",
       "OAUTH_CLIENT_ID": "1234"
