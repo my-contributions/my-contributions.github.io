@@ -231,8 +231,9 @@ export default class GitHub {
     async _fetchPullRequests() {
         const q = encodeURIComponent('type:pr author:' + this._author);
         const pullRequests = await this._fetchPages('https://api.github.com/search/issues?per_page=100&q=' + q);
+        const filtered = pullRequests.items.filter((item) => item.author_association != 'OWNER');
 
-        const promises = pullRequests.items.map(async (item) => {
+        const promises = filtered.map(async (item) => {
             if (item.state == 'closed' && await this._isMerged(item.pull_request.url)) {
                 item.state = 'merged';
             }
