@@ -124,6 +124,7 @@ describe('aggregatePullRequests', () => {
                 return mockResponse({items: [
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
+                        author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/1'},
                         state: 'open',
                     },
@@ -138,6 +139,7 @@ describe('aggregatePullRequests', () => {
                 return mockResponse({items: [
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
+                        author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/2'},
                         state: 'closed',
                     },
@@ -182,6 +184,54 @@ describe('aggregatePullRequests', () => {
         await expect(github.aggregatePullRequests()).resolves.toEqual(result);
     });
 
+    it('filters owned', async () => {
+        window.fetch.mockImplementation((url) => {
+            switch (url) {
+            case 'https://api.github.com/search/issues?per_page=100&q=type%3Apr%20author%3Atest':
+                return mockResponse({items: [
+                    {
+                        repository_url: 'https://api.github.com/repos/user/repo1',
+                        author_association: 'CONTRIBUTOR',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/1'},
+                        state: 'open',
+                    },
+                    {
+                        repository_url: 'https://api.github.com/repos/user/repo2',
+                        author_association: 'OWNER',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo2/pulls/1'},
+                        state: 'open',
+                    },
+                ]});
+            case 'https://api.github.com/repos/user/repo1':
+                return mockResponse({
+                    html_url: 'https://github.com/user/repo1',
+                    full_name: 'Repo 1',
+                    stargazers_count: 1,
+                    language: 'JavaScript',
+                });
+            default:
+                return { ok: false };
+            }
+        });
+
+        const result = [
+            {
+                repository: {
+                    html_url: 'https://github.com/user/repo1',
+                    full_name: 'Repo 1',
+                    stargazers_count: 1,
+                    language: 'JavaScript',
+                },
+                open: 1,
+                closed: 0,
+                merged: 0,
+                html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%201',
+            },
+        ];
+
+        await expect(github.aggregatePullRequests()).resolves.toEqual(result);
+    });
+
     it('aggregates', async () => {
         window.fetch.mockImplementation((url) => {
             switch (url) {
@@ -189,36 +239,43 @@ describe('aggregatePullRequests', () => {
                 return mockResponse({items: [
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
+                        author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/1'},
                         state: 'open',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
+                        author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/2'},
                         state: 'closed',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
+                        author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/3'},
                         state: 'closed',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo2',
+                        author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo2/pulls/1'},
                         state: 'open',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo2',
+                        author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo2/pulls/2'},
                         state: 'open',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo3',
+                        author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo3/pulls/1'},
                         state: 'closed',
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo3',
+                        author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo3/pulls/2'},
                         state: 'closed',
                     },
