@@ -308,6 +308,246 @@ describe('aggregatePullRequests', () => {
     });
 });
 
+describe('aggregateIssues', () => {
+    it('handles HTTP errors', async () => {
+        window.fetch.mockReturnValueOnce({ok: false});
+
+        const error = new Error(
+            'Could not fetch https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest'
+        );
+        await expect(github.aggregateIssues()).rejects.toEqual(error);
+    });
+
+    it('requests authorization if 401 Unauthorized', async () => {
+        github._authorization = 'token';
+        window.fetch.mockReturnValueOnce({status: 401});
+
+        await expect(github.aggregateIssues()).resolves.toEqual(null);
+        expect(window.localStorage.removeItem).toHaveBeenCalledWith('access_token');
+    });
+
+    it('uses authorization header', async () => {
+        github._authorization = 'token';
+        window.fetch.mockReturnValueOnce(mockResponse({items: []}));
+
+        await expect(github.aggregateIssues()).resolves.toEqual([]);
+    });
+
+    it('handles pagination errors', async () => {
+        window.fetch.mockReturnValueOnce(mockResponse({}, {'Link': 'error'}));
+
+        const error = new Error('Pagination error');
+        await expect(github.aggregateIssues()).rejects.toEqual(error);
+    });
+
+    it('fetches pages', async () => {
+        window.fetch.mockImplementation((url) => {
+            switch (url) {
+            case 'https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest':
+                return mockResponse({
+                    items: [
+                        {
+                            repository_url: 'https://api.github.com/repos/user/repo1',
+                            author_association: 'CONTRIBUTOR',
+                            state: 'open',
+                        },
+                    ],
+                }, {
+                    'Link':
+                    '<https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest&page=2>;' +
+                    ' rel="next", ' +
+                    '<https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest&page=2>;' +
+                    ' rel="last',
+                });
+            case 'https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest&page=2':
+                return mockResponse({
+                    items: [
+                        {
+                            repository_url: 'https://api.github.com/repos/user/repo1',
+                            author_association: 'CONTRIBUTOR',
+                            state: 'closed',
+                        },
+                    ],
+                }, {
+                    'Link':
+                    '<https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest&page=1>;' +
+                    ' rel="prev", ' +
+                    '<https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest&page=1>;' +
+                    ' rel="first"',
+                });
+            case 'https://api.github.com/repos/user/repo1':
+                return mockResponse({
+                    html_url: 'https://github.com/user/repo1',
+                    full_name: 'Repo 1',
+                    stargazers_count: 1,
+                    language: 'JavaScript',
+                });
+            default:
+                return {ok: false};
+            }
+        });
+
+        const result = [
+            {
+                repository: {
+                    html_url: 'https://github.com/user/repo1',
+                    full_name: 'Repo 1',
+                    stargazers_count: 1,
+                    language: 'JavaScript',
+                },
+                open: 1,
+                closed: 1,
+                html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%201',
+            },
+        ];
+
+        await expect(github.aggregateIssues()).resolves.toEqual(result);
+    });
+
+    it('filters owned', async () => {
+        window.fetch.mockImplementation((url) => {
+            switch (url) {
+            case 'https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest':
+                return mockResponse({
+                    items: [
+                        {
+                            repository_url: 'https://api.github.com/repos/user/repo1',
+                            author_association: 'CONTRIBUTOR',
+                            state: 'open',
+                        },
+                        {
+                            repository_url: 'https://api.github.com/repos/user/repo2',
+                            author_association: 'OWNER',
+                            state: 'closed',
+                        },
+                    ],
+                });
+            case 'https://api.github.com/repos/user/repo1':
+                return mockResponse({
+                    html_url: 'https://github.com/user/repo1',
+                    full_name: 'Repo 1',
+                    stargazers_count: 1,
+                    language: 'JavaScript',
+                });
+            default:
+                return {ok: false};
+            }
+        });
+
+        const result = [{
+            repository: {
+                html_url: 'https://github.com/user/repo1',
+                full_name: 'Repo 1',
+                stargazers_count: 1,
+                language: 'JavaScript',
+            },
+            open: 1,
+            closed: 0,
+            html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%201',
+        }];
+
+        await expect(github.aggregateIssues()).resolves.toEqual(result);
+    });
+
+    it('aggregates', async () => {
+        window.fetch.mockImplementation((url) => {
+            switch (url) {
+            case 'https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest':
+                return mockResponse({
+                    items: [
+                        {
+                            repository_url: 'https://api.github.com/repos/user/repo1',
+                            author_association: 'CONTRIBUTOR',
+                            state: 'open',
+                        },
+                        {
+                            repository_url: 'https://api.github.com/repos/user/repo1',
+                            author_association: 'CONTRIBUTOR',
+                            state: 'closed',
+                        },
+                        {
+                            repository_url: 'https://api.github.com/repos/user/repo2',
+                            author_association: 'CONTRIBUTOR',
+                            state: 'open',
+                        },
+                        {
+                            repository_url: 'https://api.github.com/repos/user/repo3',
+                            author_association: 'CONTRIBUTOR',
+                            state: 'closed',
+                        },
+                        {
+                            repository_url: 'https://api.github.com/repos/user/repo3',
+                            author_association: 'CONTRIBUTOR',
+                            state: 'closed',
+                        },
+                    ],
+                });
+            case 'https://api.github.com/repos/user/repo1':
+                return mockResponse({
+                    html_url: 'https://github.com/user/repo1',
+                    full_name: 'Repo 1',
+                    stargazers_count: 1,
+                    language: 'JavaScript',
+                });
+            case 'https://api.github.com/repos/user/repo2':
+                return mockResponse({
+                    html_url: 'https://github.com/user/repo2',
+                    full_name: 'Repo 2',
+                    stargazers_count: 3,
+                    language: 'Python',
+                });
+            case 'https://api.github.com/repos/user/repo3':
+                return mockResponse({
+                    html_url: 'https://github.com/user/repo3',
+                    full_name: 'Repo 3',
+                    stargazers_count: 2,
+                    language: 'Go',
+                });
+            default:
+                return {ok: false};
+            }
+        });
+
+        const result = [
+            {
+                repository: {
+                    html_url: 'https://github.com/user/repo3',
+                    full_name: 'Repo 3',
+                    stargazers_count: 2,
+                    language: 'Go',
+                },
+                open: 0,
+                closed: 2,
+                html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%203',
+            },
+            {
+                repository: {
+                    html_url: 'https://github.com/user/repo1',
+                    full_name: 'Repo 1',
+                    stargazers_count: 1,
+                    language: 'JavaScript',
+                },
+                open: 1,
+                closed: 1,
+                html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%201',
+            },
+            {
+                repository: {
+                    html_url: 'https://github.com/user/repo2',
+                    full_name: 'Repo 2',
+                    stargazers_count: 3,
+                    language: 'Python',
+                },
+                open: 1,
+                closed: 0,
+                html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%202',
+            },
+        ];
+
+        await expect(github.aggregateIssues()).resolves.toEqual(result);
+    });
+});
+
 describe('authorize', () => {
     it('gets access_token from localStorage', async () => {
         window.localStorage.getItem.mockReturnValueOnce('some_token');

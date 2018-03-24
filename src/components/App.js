@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import PullRequests from './PullRequests';
 import GitHub from '../api/GitHub';
+import Issues from './Issues';
 
 
 class App extends React.PureComponent {
@@ -42,7 +43,12 @@ class App extends React.PureComponent {
         }
 
         if (this.state.github) {
-            return <PullRequests github={this.state.github}/>;
+            return (
+                <div>
+                    <PullRequests github={this.state.github}/>
+                    <Issues github={this.state.github}/>
+                </div>
+            );
         }
 
         return null;

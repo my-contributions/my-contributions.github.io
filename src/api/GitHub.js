@@ -78,10 +78,37 @@ export default class GitHub {
         }, {});
     }
 
+    static _reduceIssues(items) {
+        return items.reduce((result, value) => {
+            const url = value.repository_url;
+            const repository = result[url] || {
+                open: 0,
+                closed: 0,
+            };
+
+            repository[value.state] += 1;
+            result[url] = repository;
+
+            return result;
+        }, {});
+    }
+
     static _sortPullRequests(items) {
         return items.sort((a, b) => {
             const aCount = a.open + a.closed + a.merged;
             const bCount = b.open + b.closed + b.merged;
+
+            if (aCount == bCount) {
+                return a.repository.stargazers_count < b.repository.stargazers_count;
+            }
+            return aCount < bCount;
+        });
+    }
+
+    static _sortIssues(items) {
+        return items.sort((a, b) => {
+            const aCount = a.open + a.closed;
+            const bCount = b.open + b.closed;
 
             if (aCount == bCount) {
                 return a.repository.stargazers_count < b.repository.stargazers_count;
@@ -142,7 +169,7 @@ export default class GitHub {
         return await response.json();
     }
 
-    async _fetchRepositoryData(items) {
+    async _augmentPullRequests(items) {
         const promises = Object.entries(items).map(async (entry) => {
             const repository = await this._fetchJSON(entry[0]);
             return {
@@ -156,6 +183,25 @@ export default class GitHub {
                 closed: entry[1].closed,
                 merged: entry[1].merged,
                 html_url: this._htmlURL('pr', repository.full_name),
+            };
+        });
+
+        return await Promise.all(promises);
+    }
+
+    async _augmentIssues(items) {
+        const promises = Object.entries(items).map(async (entry) => {
+            const repository = await this._fetchJSON(entry[0]);
+            return {
+                repository: {
+                    html_url: repository.html_url,
+                    full_name: repository.full_name,
+                    stargazers_count: repository.stargazers_count,
+                    language: repository.language,
+                },
+                open: entry[1].open,
+                closed: entry[1].closed,
+                html_url: this._htmlURL('issue', repository.full_name),
             };
         });
 
@@ -194,6 +240,14 @@ export default class GitHub {
         });
 
         return await Promise.all(promises);
+    }
+
+    async _fetchIssues() {
+        const q = encodeURIComponent('type:issue author:' + this._author);
+        const issues = await this._fetchPages('https://api.github.com/search/issues?per_page=100&q=' + q);
+        const filtered = issues.items.filter((item) => item.author_association != 'OWNER');
+
+        return filtered;
     }
 
     async authorize() {
@@ -237,7 +291,7 @@ export default class GitHub {
         try {
             const pullRequests = await this._fetchPullRequests();
             const reduced = GitHub._reducePullRequests(pullRequests);
-            results = await this._fetchRepositoryData(reduced);
+            results = await this._augmentPullRequests(reduced);
         }
         catch (e) {
             if (e.name == 'AuthorizationError') {
@@ -248,5 +302,24 @@ export default class GitHub {
         }
 
         return GitHub._sortPullRequests(results);
+    }
+
+    async aggregateIssues() {
+        let results;
+
+        try {
+            const issues = await this._fetchIssues();
+            const reduced = GitHub._reduceIssues(issues);
+            results = await this._augmentIssues(reduced);
+        }
+        catch (e) {
+            if (e.name == 'AuthorizationError') {
+                GitHub._requestAuthorization();
+                return null;
+            }
+            throw e;
+        }
+
+        return GitHub._sortIssues(results);
     }
 }
