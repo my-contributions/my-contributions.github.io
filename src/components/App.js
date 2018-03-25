@@ -3,6 +3,7 @@ import React from 'react';
 import PullRequests from './PullRequests';
 import GitHub from '../api/GitHub';
 import Issues from './Issues';
+import Author from './Author';
 
 
 class App extends React.PureComponent {
@@ -45,6 +46,7 @@ class App extends React.PureComponent {
         if (this.state.github) {
             return (
                 <div>
+                    <Author github={this.state.github}/>
                     <PullRequests github={this.state.github}/>
                     <Issues github={this.state.github}/>
                 </div>
