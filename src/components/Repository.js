@@ -9,8 +9,7 @@ export default class Repository extends React.PureComponent {
         }
         return (
             <div>
-                <a href={this.props.item.html_url}>{this.props.item.full_name}</a>&nbsp;
-                ({details})
+                <a href={this.props.item.html_url}>{this.props.item.full_name}</a> ({details})
             </div>
         );
     }

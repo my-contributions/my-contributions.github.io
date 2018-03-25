@@ -605,6 +605,39 @@ describe('aggregateIssues', () => {
     });
 });
 
+describe('getUser', () => {
+    it('handles HTTP errors', async () => {
+        window.fetch.mockReturnValueOnce({ok: false});
+
+        const error = new Error(
+            'Could not fetch https://api.github.com/users/test'
+        );
+        await expect(github.getUser()).rejects.toEqual(error);
+    });
+
+    it('requests authorization if 401 Unauthorized', async () => {
+        github._authorization = 'token';
+        window.fetch.mockReturnValueOnce({status: 401});
+
+        await expect(github.getUser()).resolves.toEqual(null);
+        expect(window.localStorage.removeItem).toHaveBeenCalledWith('access_token');
+    });
+
+    it('uses authorization header', async () => {
+        const user = {
+            login: 'test',
+            html_url: 'https://github.com/test',
+            name: 'Test User',
+            bio: 'Test Bio',
+            location: 'Test Location',
+        };
+        github._authorization = 'token';
+        window.fetch.mockReturnValueOnce(mockResponse(user));
+
+        await expect(github.getUser()).resolves.toEqual(user);
+    });
+});
+
 describe('authorize', () => {
     it('gets access_token from localStorage', async () => {
         window.localStorage.getItem.mockReturnValueOnce('some_token');

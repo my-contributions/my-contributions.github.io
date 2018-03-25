@@ -323,4 +323,27 @@ export default class GitHub {
 
         return GitHub._sortIssues(results);
     }
+
+    async getUser() {
+        let user;
+
+        try {
+            user = await this._fetchJSON('https://api.github.com/users/' + this._author);
+        }
+        catch (e) {
+            if (e.name == 'AuthorizationError') {
+                GitHub._requestAuthorization();
+                return null;
+            }
+            throw e;
+        }
+
+        return {
+            login: user.login,
+            html_url: user.html_url,
+            name: user.name,
+            bio: user.bio,
+            location: user.location,
+        };
+    }
 }
