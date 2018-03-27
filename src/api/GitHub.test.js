@@ -72,6 +72,14 @@ function mockResponse(body, headers = {}) {
 
 describe('constructor', () => {
     it('validates author', () => {
+        function emptyAuthor() {
+            new GitHub('');
+        }
+
+        function authorWithSlash() {
+            new GitHub('au/thor');
+        }
+
         function authorWithSpace() {
             new GitHub(' author');
         }
@@ -79,7 +87,9 @@ describe('constructor', () => {
         function authorWithColon() {
             new GitHub('aut:hor');
         }
-        
+
+        expect(emptyAuthor).toThrow('Invalid author');
+        expect(authorWithSlash).toThrow('Invalid author');
         expect(authorWithSpace).toThrow('Invalid author');
         expect(authorWithColon).toThrow('Invalid author');
     });
