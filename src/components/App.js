@@ -4,6 +4,7 @@ import PullRequests from './PullRequests';
 import GitHub from '../api/GitHub';
 import Issues from './Issues';
 import Author from './Author';
+import AuthorInput from './AuthorInput';
 
 
 class App extends React.PureComponent {
@@ -13,6 +14,7 @@ class App extends React.PureComponent {
         this.state = {
             github: null,
             error: '',
+            author: '',
         };
     }
 
@@ -21,9 +23,10 @@ class App extends React.PureComponent {
         const author = params.get('author');
 
         if (!author) {
-            this.setState({error: 'Missing author'});
             return;
         }
+
+        this.setState({author: author});
 
         let github;
         try {
@@ -43,17 +46,23 @@ class App extends React.PureComponent {
             return this.state.error;
         }
 
-        if (this.state.github) {
-            return (
-                <div>
-                    <Author github={this.state.github}/>
-                    <PullRequests github={this.state.github}/>
-                    <Issues github={this.state.github}/>
-                </div>
-            );
-        }
+        const results = this.state.github && (
+            <div>
+                <Author github={this.state.github}/>
+                <PullRequests github={this.state.github}/>
+                <Issues github={this.state.github}/>
+            </div>
+        );
 
-        return null;
+        const header = !this.state.author && 'Show off your open source contributions and check out others';
+
+        return (
+            <div>
+                {header}
+                <AuthorInput value={this.state.author}/>
+                {results}
+            </div>
+        );
     }
 }
 

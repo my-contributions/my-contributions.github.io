@@ -3,9 +3,11 @@ function _AuthorizationError() {
     this.name = 'AuthorizationError';
 }
 
+export const authorPattern = '^[^ :/]+$';
+
 export default class GitHub {
     constructor(author) {
-        if (/[ :]/.test(author)) {
+        if (!new RegExp(authorPattern).test(author)) {
             throw new Error('Invalid author');
         }
 
