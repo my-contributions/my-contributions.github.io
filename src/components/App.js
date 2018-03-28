@@ -5,7 +5,7 @@ import GitHub from '../api/GitHub';
 import Issues from './Issues';
 import Author from './Author';
 import AuthorInput from './AuthorInput';
-
+import BlankSlate from './BlankSlate';
 
 class App extends React.PureComponent {
     constructor(props) {
@@ -46,21 +46,16 @@ class App extends React.PureComponent {
             return this.state.error;
         }
 
-        const results = this.state.github && (
+        if (!this.state.author) {
+            return <BlankSlate/>;
+        }
+
+        return this.state.github && (
             <div>
+                <AuthorInput value={this.state.author}/>
                 <Author github={this.state.github}/>
                 <PullRequests github={this.state.github}/>
                 <Issues github={this.state.github}/>
-            </div>
-        );
-
-        const header = !this.state.author && 'Show off your open source contributions and check out others';
-
-        return (
-            <div>
-                {header}
-                <AuthorInput value={this.state.author}/>
-                {results}
             </div>
         );
     }
