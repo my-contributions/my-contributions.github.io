@@ -7,8 +7,10 @@ import {authorPattern} from '../api/GitHub';
 
 export default class AuthorInput extends React.PureComponent {
     render() {
-        const buttonHidden = Boolean(this.props.value);
-        const autoFocus = !buttonHidden;
+        const buttonStyle = {
+            display: this.props.value ? 'none' : 'inline',
+        };
+        const autoFocus = !this.props.value;
         return (
             <form method="get">
                 <input className="form-control"
@@ -20,7 +22,7 @@ export default class AuthorInput extends React.PureComponent {
                     autoFocus={autoFocus}
                     required
                 />
-                <button hidden={buttonHidden} className="btn btn-primary ml-1">Show</button>
+                <button style={buttonStyle} className="btn btn-primary ml-1">Show</button>
             </form>
         );
     }

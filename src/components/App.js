@@ -1,11 +1,8 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
-import PullRequests from './PullRequests';
 import GitHub from '../api/GitHub';
-import Issues from './Issues';
-import Author from './Author';
-import AuthorInput from './AuthorInput';
 import BlankSlate from './BlankSlate';
+import Results from './Results';
 
 class App extends React.PureComponent {
     constructor(props) {
@@ -50,14 +47,7 @@ class App extends React.PureComponent {
             return <BlankSlate/>;
         }
 
-        return this.state.github && (
-            <div>
-                <AuthorInput value={this.state.author}/>
-                <Author github={this.state.github}/>
-                <PullRequests github={this.state.github}/>
-                <Issues github={this.state.github}/>
-            </div>
-        );
+        return this.state.github && <Results github={this.state.github}/>;
     }
 }
 
