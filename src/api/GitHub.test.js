@@ -93,6 +93,10 @@ describe('constructor', () => {
         expect(authorWithSpace).toThrow('Invalid author');
         expect(authorWithColon).toThrow('Invalid author');
     });
+
+    it('saves author', () => {
+        expect(new GitHub('test_author').author).toEqual('test_author');
+    });
 });
 
 describe('aggregatePullRequests', () => {

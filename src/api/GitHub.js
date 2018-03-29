@@ -146,6 +146,10 @@ export default class GitHub {
         this._authorizationHeader = {Authorization: 'token ' + token};
     }
 
+    get author() {
+        return this._author;
+    }
+
     async _fetch(url, init) {
         let response;
         if (this._authorization) {

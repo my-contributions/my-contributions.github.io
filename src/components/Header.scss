@@ -1,0 +1,22 @@
+@import "~primer-support/lib/mixins/layout.scss";
+@import "~primer-support/lib/variables/layout.scss";
+@import "~primer-support/lib/variables/colors.scss";
+@import "~primer-utilities/lib/visibility-display.scss";
+@import "~primer-utilities/lib/flexbox.scss";
+@import "~primer-utilities/lib/margin.scss";
+
+.header {
+  @extend .d-flex;
+
+  height: 56px;
+  background-color: $bg-gray-light;
+}
+
+.header-contents {
+  @extend .d-flex;
+  @extend .flex-items-center;
+  @extend .flex-justify-between;
+  @extend .mx-auto;
+
+  width: 900px;
+}
