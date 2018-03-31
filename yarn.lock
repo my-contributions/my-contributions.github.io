@@ -5812,6 +5812,12 @@ pretty-format@^22.4.3:
     ansi-regex "^3.0.0"
     ansi-styles "^3.2.0"
 
+primer-avatars@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/primer-avatars/-/primer-avatars-1.5.2.tgz#9c72821768555a5aacf5666d7b71475a80da1115"
+  dependencies:
+    primer-support "4.5.2"
+
 primer-base@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/primer-base/-/primer-base-1.7.0.tgz#dfc23b3f485437e36f8dbc8f02a64dcf82aded6d"

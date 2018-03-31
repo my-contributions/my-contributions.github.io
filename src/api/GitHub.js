@@ -345,6 +345,7 @@ export default class GitHub {
         }
 
         return {
+            avatar_url: user.avatar_url,
             login: user.login,
             html_url: user.html_url,
             name: user.name,
