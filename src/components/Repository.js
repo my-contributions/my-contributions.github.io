@@ -1,15 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import RepositoryLanguage from './RepositoryLanguage';
+import RepositoryStars from './RepositoryStars';
+import RepositoryName from './RepositoryName';
 
 export default class Repository extends React.PureComponent {
     render() {
-        let details = `${this.props.item.stargazers_count} stars`;
-        if (this.props.item.language) {
-            details += `, ${this.props.item.language}`;
-        }
         return (
             <div>
-                <a href={this.props.item.html_url}>{this.props.item.full_name}</a> ({details})
+                <RepositoryName full_name={this.props.item.full_name} html_url={this.props.item.html_url}/>
+                <div className="d-inline-flex flex-items-end text-gray">
+                    <RepositoryLanguage value={this.props.item.language}/>
+                    <RepositoryStars value={this.props.item.stargazers_count}/>
+                </div>
             </div>
         );
     }

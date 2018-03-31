@@ -1,0 +1,16 @@
+@import "~primer-support/lib/mixins/layout.scss";
+@import "~primer-support/lib/variables/layout.scss";
+@import "~primer-utilities/lib/visibility-display.scss";
+@import "~primer-utilities/lib/flexbox.scss";
+@import "~primer-utilities/lib/margin.scss";
+@import "~primer-support/lib/variables/colors.scss";
+@import "~primer-support/lib/variables/typography.scss";
+@import "~primer-utilities/lib/typography.scss";
+
+.repository-stars {
+  @extend .f5;
+  @extend .d-flex;
+  @extend .flex-items-center;
+
+  fill: currentColor;
+}
