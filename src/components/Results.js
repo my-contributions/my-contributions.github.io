@@ -1,3 +1,5 @@
+import './Results.scss';
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import GitHub from '../api/GitHub';
@@ -12,8 +14,10 @@ export default class Results extends React.PureComponent {
             <div>
                 <Header author={this.props.github.author}/>
                 <Author github={this.props.github}/>
-                <PullRequests github={this.props.github}/>
-                <Issues github={this.props.github}/>
+                <div className="results">
+                    <PullRequests github={this.props.github}/>
+                    <Issues github={this.props.github}/>
+                </div>
             </div>
         );
     }
