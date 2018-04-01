@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Repository from './Repository';
-import RepositoryPullRequests from './RepositoryPullRequests';
 import GitHub from '../api/GitHub';
+import PullRequestsItem from './PullRequestsItem';
 
 export default class PullRequests extends React.PureComponent {
     constructor(props) {
@@ -37,20 +36,16 @@ export default class PullRequests extends React.PureComponent {
             items = 'Loading...';
         }
         else if (this.state.items.length) {
-            const listItems = this.state.items.map((item) =>
-                <li key={item.repository.full_name}>
-                    <Repository item={item.repository}/>
-                    <RepositoryPullRequests url={item.html_url} merged={item.merged} closed={item.closed} open={item.open}/>
-                </li>
+            items = this.state.items.map((item) =>
+                <PullRequestsItem key={item.repository.html_url} item={item}/>
             );
-            items = <ul>{listItems}</ul>;
         }
         else {
             items = 'There are no pull requests';
         }
 
         return (
-            <div>
+            <div className="flex-row mt-3">
                 {header}
                 {items}
             </div>

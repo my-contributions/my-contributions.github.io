@@ -1,11 +1,9 @@
 @import "~primer-support/lib/mixins/layout.scss";
 @import "~primer-support/lib/variables/layout.scss";
-@import "~primer-utilities/lib/flexbox.scss";
 @import "~primer-utilities/lib/margin.scss";
 
 .results {
-  @extend .flex-row;
   @extend .mx-auto;
 
-  width: 800px;
+  width: 600px;
 }
