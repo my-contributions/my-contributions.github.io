@@ -14,31 +14,22 @@ export default class Author extends React.PureComponent {
 
         this.state = {
             author: null,
-            error: '',
+            error: null,
         };
     }
 
-    async componentWillMount() {
-        try {
-            this.setState({
-                author: await this.props.github.getUser(),
-            });
-        }
-        catch(e) {
-            this.setState({error: e.toString()});
-        }
+    componentDidMount() {
+        this.props.github.getUser()
+            .then((result) => this.setState({author: result}))
+            .catch((error) => this.setState({error: error}));
     }
 
     render() {
         if (this.state.error) {
-            return this.state.error;
+            throw this.state.error;
         }
 
-        if (!this.state.author) {
-            return null;
-        }
-
-        return (
+        return this.state.author && (
             <div className="author">
                 <img className="avatar"
                     alt={this.state.author.name}

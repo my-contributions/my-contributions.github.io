@@ -9,13 +9,13 @@ const logoClass = 'h4 no-underline text-shadow-light text-gray mr-3';
 
 export default class Header extends React.PureComponent {
     render() {
-        if (this.props.author) {
+        if (this.props.showInput) {
             return (
                 <div className="header">
                     <div className="header-contents">
                         <div className="d-inline-flex flex-items-center">
                             <a className={logoClass} href="/">My Contributions</a>
-                            <AuthorInput value={this.props.author}/>
+                            <AuthorInput/>
                         </div>
                         <MarkGitHub/>
                     </div>
@@ -34,5 +34,9 @@ export default class Header extends React.PureComponent {
 }
 
 Header.propTypes = {
-    author: PropTypes.string,
+    showInput: PropTypes.bool,
+};
+
+Header.defaultProps = {
+    showInput: false,
 };

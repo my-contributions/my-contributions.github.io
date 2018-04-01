@@ -88,10 +88,10 @@ describe('constructor', () => {
             new GitHub('aut:hor');
         }
 
-        expect(emptyAuthor).toThrow('Invalid author');
-        expect(authorWithSlash).toThrow('Invalid author');
-        expect(authorWithSpace).toThrow('Invalid author');
-        expect(authorWithColon).toThrow('Invalid author');
+        expect(emptyAuthor).toThrow('Invalid username');
+        expect(authorWithSlash).toThrow('Invalid username');
+        expect(authorWithSpace).toThrow('Invalid username');
+        expect(authorWithColon).toThrow('Invalid username');
     });
 
     it('saves author', () => {
@@ -102,6 +102,15 @@ describe('constructor', () => {
 describe('aggregatePullRequests', () => {
     it('handles HTTP errors', async () => {
         window.fetch.mockReturnValueOnce({ok: false});
+
+        const error = new Error(
+            'Could not fetch https://api.github.com/search/issues?per_page=100&q=type%3Apr%20author%3Atest'
+        );
+        await expect(github.aggregatePullRequests()).rejects.toEqual(error);
+    });
+
+    it('handles fetch errors', async () => {
+        window.fetch.mockRejectedValueOnce(new Error());
 
         const error = new Error(
             'Could not fetch https://api.github.com/search/issues?per_page=100&q=type%3Apr%20author%3Atest'
@@ -127,7 +136,7 @@ describe('aggregatePullRequests', () => {
     it('handles pagination errors', async () => {
         window.fetch.mockReturnValueOnce(mockResponse({}, {'Link': 'error'}));
 
-        const error = new Error('Pagination error');
+        const error = new Error('GitHub API pagination error');
         await expect(github.aggregatePullRequests()).rejects.toEqual(error);
     });
 
@@ -389,6 +398,15 @@ describe('aggregateIssues', () => {
         await expect(github.aggregateIssues()).rejects.toEqual(error);
     });
 
+    it('handles fetch errors', async () => {
+        window.fetch.mockRejectedValueOnce(new Error());
+
+        const error = new Error(
+            'Could not fetch https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest'
+        );
+        await expect(github.aggregateIssues()).rejects.toEqual(error);
+    });
+
     it('requests authorization if 401 Unauthorized', async () => {
         github._authorization = 'token';
         window.fetch.mockReturnValueOnce({status: 401});
@@ -407,7 +425,7 @@ describe('aggregateIssues', () => {
     it('handles pagination errors', async () => {
         window.fetch.mockReturnValueOnce(mockResponse({}, {'Link': 'error'}));
 
-        const error = new Error('Pagination error');
+        const error = new Error('GitHub API pagination error');
         await expect(github.aggregateIssues()).rejects.toEqual(error);
     });
 
@@ -681,7 +699,7 @@ describe('authorize', () => {
     it('requires state parameter', async () => {
         paramsGetMock.mockImplementationOnce(() => 'some_code');
 
-        const error = new Error('Missing state');
+        const error = new Error('Authorization error: missing state');
 
         await expect(github.authorize()).rejects.toEqual(error);
         expect(window.localStorage.getItem).toHaveBeenCalledWith('access_token');
@@ -692,7 +710,7 @@ describe('authorize', () => {
         paramsGetMock.mockImplementation(() => 'some_state');
         window.localStorage.getItem.mockImplementation(() => null);
 
-        const error = new Error('Unknown state');
+        const error = new Error('Authorization error: unknown state');
 
         await expect(github.authorize()).rejects.toEqual(error);
         expect(window.localStorage.getItem).toHaveBeenCalledWith('access_token');
@@ -753,6 +771,31 @@ describe('authorize', () => {
         expect(paramsDeleteMock).toHaveBeenCalledWith('state');
     });
 
+    it('handles fetch errors when requesting access_token', async () => {
+        const state = 'some_state';
+        const code = 'some_code';
+
+        paramsGetMock
+            .mockReturnValueOnce(code)
+            .mockReturnValueOnce(state);
+
+        window.localStorage.getItem
+            .mockReturnValueOnce(null)
+            .mockReturnValueOnce(state);
+
+        window.fetch.mockRejectedValueOnce(new Error());
+
+        const error = new Error(`Could not fetch ${OAUTH_GATEWAY_URL}?client_id=${OAUTH_CLIENT_ID}&code=${code}`);
+        await expect(github.authorize()).rejects.toEqual(error);
+
+        expect(window.localStorage.getItem).toHaveBeenCalledWith('access_token');
+        expect(window.localStorage.getItem).toHaveBeenCalledWith('state');
+        expect(paramsGetMock).toHaveBeenCalledWith('code');
+        expect(paramsGetMock).toHaveBeenCalledWith('state');
+        expect(paramsDeleteMock).toHaveBeenCalledWith('code');
+        expect(paramsDeleteMock).toHaveBeenCalledWith('state');
+    });
+
     it('handles response error when requesting access_token', async () => {
         const state = 'some_state';
         const code = 'some_code';
@@ -769,7 +812,7 @@ describe('authorize', () => {
             error: 'some_error',
         }));
 
-        const error = new Error('Unable to get access token');
+        const error = new Error('Authorization error: unable to get access token');
         await expect(github.authorize()).rejects.toEqual(error);
 
         expect(window.localStorage.getItem).toHaveBeenCalledWith('access_token');
@@ -794,7 +837,7 @@ describe('authorize', () => {
 
         window.fetch.mockReturnValueOnce(mockResponse({}));
 
-        const error = new Error('Unable to get access token');
+        const error = new Error('Authorization error: unable to get access token');
         await expect(github.authorize()).rejects.toEqual(error);
 
         expect(window.localStorage.getItem).toHaveBeenCalledWith('access_token');

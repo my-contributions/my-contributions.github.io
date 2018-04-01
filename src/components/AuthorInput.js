@@ -8,18 +8,16 @@ import {authorPattern} from '../api/GitHub';
 export default class AuthorInput extends React.PureComponent {
     render() {
         const buttonStyle = {
-            display: this.props.value ? 'none' : 'inline',
+            display: this.props.showButton ? 'inline' : 'none',
         };
-        const autoFocus = !this.props.value;
         return (
             <form method="get">
                 <input className="form-control"
-                    defaultValue={this.props.value}
                     type="search"
                     placeholder="GitHub username"
                     name="author"
                     pattern={authorPattern}
-                    autoFocus={autoFocus}
+                    autoFocus={this.props.showButton}
                     required
                 />
                 <button style={buttonStyle} className="btn btn-primary ml-1">Show</button>
@@ -29,5 +27,9 @@ export default class AuthorInput extends React.PureComponent {
 }
 
 AuthorInput.propTypes = {
-    value: PropTypes.string,
+    showButton: PropTypes.bool,
+};
+
+AuthorInput.defaultProps = {
+    showButton: false,
 };
