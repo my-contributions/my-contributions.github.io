@@ -3,17 +3,15 @@
 @import "~primer-utilities/lib/visibility-display.scss";
 @import "~primer-utilities/lib/flexbox.scss";
 @import "~primer-utilities/lib/margin.scss";
-@import "~primer-utilities/lib/padding.scss";
+@import "~primer-support/lib/variables/typography.scss";
+@import "~primer-support/lib/variables/colors.scss";
+@import "~primer-alerts/lib/flash.scss";
 
-.author {
-  @extend .d-flex;
+.error {
+  @extend .flash;
+  @extend .flash-error;
   @extend .mx-auto;
   @extend .mt-3;
 
   width: 800px;
-}
-
-.author-details {
-  @extend .flex-row;
-  @extend .pl-3;
 }

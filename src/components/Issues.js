@@ -9,24 +9,19 @@ export default class Issues extends React.PureComponent {
 
         this.state = {
             items: null,
-            error: '',
+            error: null,
         };
     }
 
-    async componentWillMount() {
-        try {
-            this.setState({
-                items: await this.props.github.aggregateIssues(),
-            });
-        }
-        catch(e) {
-            this.setState({error: e.toString()});
-        }
+    componentDidMount() {
+        this.props.github.aggregateIssues()
+            .then((result) => this.setState({items: result}))
+            .catch((error) => this.setState({error: error}));
     }
 
     render() {
         if (this.state.error) {
-            return this.state.error;
+            throw this.state.error;
         }
 
         const header = <h3>Issues</h3>;

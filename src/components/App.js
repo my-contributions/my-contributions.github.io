@@ -3,6 +3,9 @@ import React from 'react';
 import GitHub from '../api/GitHub';
 import BlankSlate from './BlankSlate';
 import Results from './Results';
+import Header from './Header';
+import ErrorBoundary from './ErrorBoundary';
+import FlashError from './FlashError';
 
 class App extends React.PureComponent {
     constructor(props) {
@@ -10,12 +13,12 @@ class App extends React.PureComponent {
 
         this.state = {
             github: null,
-            error: '',
+            error: null,
             author: '',
         };
     }
 
-    async componentWillMount() {
+    componentDidMount() {
         const params = new URL(window.location.href).searchParams;
         const author = params.get('author');
 
@@ -28,26 +31,48 @@ class App extends React.PureComponent {
         let github;
         try {
             github = new GitHub(author);
-            await github.authorize();
         }
-        catch (e) {
-            this.setState({error: e.toString()});
+        catch (error) {
+            this.setState({error: error});
             return;
         }
 
-        this.setState({github: github});
+        github.authorize()
+            .then(() => {
+                this.setState({github: github});
+            })
+            .catch((error) => {
+                this.setState({error: error});
+            });
     }
 
     render() {
         if (this.state.error) {
-            return this.state.error;
+            return (
+                <React.StrictMode>
+                    <Header showInput/>
+                    <FlashError error={this.state.error}/>
+                </React.StrictMode>
+            );
         }
 
         if (!this.state.author) {
-            return <BlankSlate/>;
+            return (
+                <React.StrictMode>
+                    <Header/>
+                    <BlankSlate/>
+                </React.StrictMode>
+            );
         }
 
-        return this.state.github && <Results github={this.state.github}/>;
+        return this.state.github && (
+            <React.StrictMode>
+                <Header showInput/>
+                <ErrorBoundary>
+                    <Results github={this.state.github}/>
+                </ErrorBoundary>
+            </React.StrictMode>
+        );
     }
 }
 

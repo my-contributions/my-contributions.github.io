@@ -3,12 +3,30 @@ function _AuthorizationError() {
     this.name = 'AuthorizationError';
 }
 
+async function _fetchJSON(url, init) {
+    const fetchError = new Error('Could not fetch ' + url);
+    let response;
+
+    try {
+        response = await fetch(url, init);
+    }
+    catch (e) {
+        throw fetchError;
+    }
+
+    if (!response.ok) {
+        throw fetchError;
+    }
+
+    return await response.json();
+}
+
 export const authorPattern = '^[^ :/]+$';
 
 export default class GitHub {
     constructor(author) {
         if (!new RegExp(authorPattern).test(author)) {
-            throw new Error('Invalid author');
+            throw new Error('Invalid username');
         }
 
         this._author = author;
@@ -52,7 +70,7 @@ export default class GitHub {
 
         const urls = /<([^<>]+)>; rel="(next|last|first|prev)"/.exec(link);
         if (urls == null || urls.length < 3) {
-            throw new Error('Pagination error');
+            throw new Error('GitHub API pagination error');
         }
 
         let i = urls.length - 1;
@@ -125,14 +143,14 @@ export default class GitHub {
     }
 
     async _getAccessToken(code) {
-        const response = await this._fetchJSON(
+        const response = await _fetchJSON(
             OAUTH_GATEWAY_URL + '?' +
             'client_id=' + OAUTH_CLIENT_ID + '&' +
             'code=' + code,
             {method: 'POST'},
         );
         if (response.error || !response.access_token) {
-            throw new Error('Unable to get access token');
+            throw new Error('Authorization error: unable to get access token');
         }
 
         return response.access_token;
@@ -151,20 +169,25 @@ export default class GitHub {
     }
 
     async _fetch(url, init) {
-        let response;
         if (this._authorization) {
-            const authorizedInit = Object.assign({headers: this._authorizationHeader}, init);
-            response = await fetch(url, authorizedInit);
-            if (response.status == 401) {
-                throw new _AuthorizationError();
-            }
-        }
-        else {
-            response = await fetch(url, init);
+            init = Object.assign({headers: this._authorizationHeader}, init);
         }
 
+        const fetchError = new Error('Could not fetch ' + url);
+        let response;
+
+        try {
+            response = await fetch(url, init);
+        }
+        catch (e) {
+            throw fetchError;
+        }
+
+        if (response.status == 401) {
+            throw new _AuthorizationError();
+        }
         if (!response.ok) {
-            throw new Error('Could not fetch ' + url);
+            throw fetchError;
         }
 
         return response;
@@ -274,12 +297,12 @@ export default class GitHub {
 
         const state = params.get('state');
         if (!state) {
-            throw new Error('Missing state');
+            throw new Error('Authorization error: missing state');
         }
 
         const localState = localStorage.getItem('state');
         if (localState != state) {
-            throw new Error('Unknown state');
+            throw new Error('Authorization error: unknown state');
         }
 
         params.delete('code');
