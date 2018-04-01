@@ -1,0 +1,28 @@
+@import "~primer-support/lib/mixins/layout.scss";
+@import "~primer-support/lib/variables/layout.scss";
+@import "~primer-support/lib/variables/colors.scss";
+@import "~primer-utilities/lib/margin.scss";
+@import "~primer-utilities/lib/padding.scss";
+@import "~primer-support/lib/variables/typography.scss";
+
+.counter {
+  @extend .ml-3;
+  @extend .px-1;
+
+  border-radius: 3px;
+  color: $bg-white;
+  background-color: $bg-gray-dark;
+  font-weight: $font-weight-light;
+}
+
+.closed {
+  background-color: $bg-red;
+}
+
+.open {
+  background-color: $bg-green;
+}
+
+.merged {
+  background-color: $bg-purple;
+}

@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import GitHub from '../api/GitHub';
-import Repository from './Repository';
-import RepositoryIssues from './RepositoryIssues';
+import IssuesItem from './IssuesItem';
 
 export default class Issues extends React.PureComponent {
     constructor(props) {
@@ -37,20 +36,16 @@ export default class Issues extends React.PureComponent {
             items = 'Loading...';
         }
         else if (this.state.items.length) {
-            const listItems = this.state.items.map((item) =>
-                <li key={item.repository.full_name}>
-                    <Repository item={item.repository}/>
-                    <RepositoryIssues url={item.html_url} closed={item.closed} open={item.open}/>
-                </li>
+            items = this.state.items.map((item) =>
+                <IssuesItem key={item.repository.html_url} item={item}/>
             );
-            items = <ul>{listItems}</ul>;
         }
         else {
             items = 'There are no issues';
         }
 
         return (
-            <div>
+            <div className="flex-row  mt-3">
                 {header}
                 {items}
             </div>

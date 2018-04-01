@@ -7,14 +7,11 @@
 @import "~primer-support/lib/variables/typography.scss";
 @import "~primer-support/lib/variables/colors.scss";
 @import "~primer-support/lib/variables/misc.scss";
-@import "~primer-utilities/lib/borders.scss";
 
 .author {
   @extend .d-flex;
   @extend .mx-auto;
-  @extend .my-3;
-  @extend .border-bottom;
-  @extend .pb-2;
+  @extend .mt-3;
 
   width: 800px;
 }
