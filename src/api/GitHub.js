@@ -137,6 +137,13 @@ export default class GitHub {
         });
     }
 
+    static _isNotOwned(item) {
+        return (
+            item.author_association != 'OWNER' &&
+            item.author_association != 'MEMBER'
+        );
+    }
+
     _htmlURL(type, repo) {
         const q = encodeURIComponent(`type:${type} author:${this._author} repo:${repo}`);
         return 'https://github.com/search?utf8=✓&q=' + q;
@@ -260,7 +267,7 @@ export default class GitHub {
     async _fetchPullRequests() {
         const q = encodeURIComponent('type:pr author:' + this._author);
         const pullRequests = await this._fetchPages('https://api.github.com/search/issues?per_page=100&q=' + q);
-        const filtered = pullRequests.items.filter((item) => item.author_association != 'OWNER');
+        const filtered = pullRequests.items.filter(GitHub._isNotOwned);
 
         const promises = filtered.map(async (item) => {
             if (item.state == 'closed' && await this._isMerged(item.pull_request.url)) {
@@ -275,7 +282,7 @@ export default class GitHub {
     async _fetchIssues() {
         const q = encodeURIComponent('type:issue author:' + this._author);
         const issues = await this._fetchPages('https://api.github.com/search/issues?per_page=100&q=' + q);
-        const filtered = issues.items.filter((item) => item.author_association != 'OWNER');
+        const filtered = issues.items.filter(GitHub._isNotOwned);
 
         return filtered;
     }
