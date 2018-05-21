@@ -7,7 +7,7 @@ import StarIcon from 'octicons/build/svg/star.svg';
 
 export default class RepositoryStars extends React.PureComponent {
     render() {
-        return this.props.value && (
+        return Boolean(this.props.value) && (
             <div className="repository-stars">
                 <StarIcon width={14} height={16}/>&nbsp;{this.props.value}
             </div>
