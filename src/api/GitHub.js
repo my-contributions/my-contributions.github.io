@@ -89,11 +89,17 @@ export default class GitHub {
                 open: 0,
                 merged: 0,
                 closed: 0,
+                updated_at: new Date(0),
             };
 
             repository[value.state] += 1;
-            result[url] = repository;
 
+            const updatedAt = new Date(value.updated_at);
+            if (repository.updated_at < updatedAt) {
+                repository.updated_at = updatedAt;
+            }
+
+            result[url] = repository;
             return result;
         }, {});
     }
@@ -104,37 +110,19 @@ export default class GitHub {
             const repository = result[url] || {
                 open: 0,
                 closed: 0,
+                updated_at: new Date(0),
             };
 
             repository[value.state] += 1;
             result[url] = repository;
 
+            const updatedAt = new Date(value.updated_at);
+            if (repository.updated_at < updatedAt) {
+                repository.updated_at = updatedAt;
+            }
+
             return result;
         }, {});
-    }
-
-    static _sortPullRequests(items) {
-        return items.sort((a, b) => {
-            const aCount = a.open + a.closed + a.merged;
-            const bCount = b.open + b.closed + b.merged;
-
-            if (aCount == bCount) {
-                return a.repository.stargazers_count < b.repository.stargazers_count;
-            }
-            return aCount < bCount;
-        });
-    }
-
-    static _sortIssues(items) {
-        return items.sort((a, b) => {
-            const aCount = a.open + a.closed;
-            const bCount = b.open + b.closed;
-
-            if (aCount == bCount) {
-                return a.repository.stargazers_count < b.repository.stargazers_count;
-            }
-            return aCount < bCount;
-        });
     }
 
     static _isNotOwned(item) {
@@ -218,6 +206,7 @@ export default class GitHub {
                 open: entry[1].open,
                 closed: entry[1].closed,
                 merged: entry[1].merged,
+                updated_at: entry[1].updated_at,
                 html_url: this._htmlURL('pr', repository.full_name),
             };
         });
@@ -237,6 +226,7 @@ export default class GitHub {
                 },
                 open: entry[1].open,
                 closed: entry[1].closed,
+                updated_at: entry[1].updated_at,
                 html_url: this._htmlURL('issue', repository.full_name),
             };
         });
@@ -338,7 +328,7 @@ export default class GitHub {
             throw e;
         }
 
-        return GitHub._sortPullRequests(results);
+        return results.sort((a, b) => a.updated_at < b.updated_at);
     }
 
     async aggregateIssues() {
@@ -357,7 +347,7 @@ export default class GitHub {
             throw e;
         }
 
-        return GitHub._sortIssues(results);
+        return results.sort((a, b) => a.updated_at < b.updated_at);
     }
 
     async getUser() {
