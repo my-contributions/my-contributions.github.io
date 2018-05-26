@@ -4,6 +4,7 @@ import RepositoryLanguage from './RepositoryLanguage';
 import RepositoryStars from './RepositoryStars';
 import RepositoryName from './RepositoryName';
 import RepositoryCounter from './RepositoryCounter';
+import moment from 'moment';
 
 export default class IssuesItem extends React.PureComponent {
     render() {
@@ -19,9 +20,14 @@ export default class IssuesItem extends React.PureComponent {
                         <RepositoryCounter value={this.props.item.closed} html_url={this.props.item.html_url} text="closed"/>
                     </div>
                 </div>
-                <div className="d-inline-flex text-gray">
-                    <RepositoryLanguage value={this.props.item.repository.language}/>
-                    <RepositoryStars value={this.props.item.repository.stargazers_count}/>
+                <div className="d-flex flex-justify-between text-gray">
+                    <div className="d-inline-flex">
+                        <RepositoryLanguage value={this.props.item.repository.language}/>
+                        <RepositoryStars value={this.props.item.repository.stargazers_count}/>
+                    </div>
+                    <div>
+                        Updated {moment(this.props.item.updated_at).fromNow()}
+                    </div>
                 </div>
             </div>
         );
@@ -38,6 +44,7 @@ IssuesItem.propTypes = {
         }).isRequired,
         open: PropTypes.number.isRequired,
         closed: PropTypes.number.isRequired,
+        updated_at: PropTypes.instanceOf(Date).isRequired,
         html_url: PropTypes.string.isRequired,
     }).isRequired,
 };

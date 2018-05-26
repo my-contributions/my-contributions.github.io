@@ -141,6 +141,7 @@ describe('aggregatePullRequests', () => {
     });
 
     it('fetches pages', async () => {
+        const now = new Date();
         window.fetch.mockImplementation((url) => {
             switch (url) {
             case 'https://api.github.com/search/issues?per_page=100&q=type%3Apr%20author%3Atest':
@@ -150,6 +151,7 @@ describe('aggregatePullRequests', () => {
                         author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/1'},
                         state: 'open',
+                        updated_at: now,
                     },
                 ]}, {
                     'Link':
@@ -165,6 +167,7 @@ describe('aggregatePullRequests', () => {
                         author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/2'},
                         state: 'closed',
+                        updated_at: now,
                     },
                 ]}, {
                     'Link':
@@ -200,6 +203,7 @@ describe('aggregatePullRequests', () => {
                 open: 1,
                 closed: 1,
                 merged: 0,
+                updated_at: now,
                 html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%201',
             },
         ];
@@ -208,6 +212,7 @@ describe('aggregatePullRequests', () => {
     });
 
     it('filters owned', async () => {
+        const now = new Date();
         window.fetch.mockImplementation((url) => {
             switch (url) {
             case 'https://api.github.com/search/issues?per_page=100&q=type%3Apr%20author%3Atest':
@@ -217,12 +222,21 @@ describe('aggregatePullRequests', () => {
                         author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/1'},
                         state: 'open',
+                        updated_at: now,
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo2',
                         author_association: 'OWNER',
                         pull_request: {url: 'https://api.github.com/repos/user/repo2/pulls/1'},
                         state: 'open',
+                        updated_at: now,
+                    },
+                    {
+                        repository_url: 'https://api.github.com/repos/user/repo3',
+                        author_association: 'MEMBER',
+                        pull_request: {url: 'https://api.github.com/repos/user/repo3/pulls/1'},
+                        state: 'open',
+                        updated_at: now,
                     },
                 ]});
             case 'https://api.github.com/repos/user/repo1':
@@ -248,6 +262,7 @@ describe('aggregatePullRequests', () => {
                 open: 1,
                 closed: 0,
                 merged: 0,
+                updated_at: now,
                 html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%201',
             },
         ];
@@ -265,42 +280,49 @@ describe('aggregatePullRequests', () => {
                         author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/1'},
                         state: 'open',
+                        updated_at: new Date(0),
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
                         author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/2'},
                         state: 'closed',
+                        updated_at: new Date(1),
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo1',
                         author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo1/pulls/3'},
                         state: 'closed',
+                        updated_at: new Date(2),
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo2',
                         author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo2/pulls/1'},
                         state: 'open',
+                        updated_at: new Date(3),
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo2',
                         author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo2/pulls/2'},
                         state: 'open',
+                        updated_at: new Date(4),
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo3',
                         author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo3/pulls/1'},
                         state: 'closed',
+                        updated_at: new Date(5),
                     },
                     {
                         repository_url: 'https://api.github.com/repos/user/repo3',
                         author_association: 'CONTRIBUTOR',
                         pull_request: {url: 'https://api.github.com/repos/user/repo3/pulls/2'},
                         state: 'closed',
+                        updated_at: new Date(6),
                     },
                 ]});
             case 'https://api.github.com/repos/user/repo1/pulls/2':
@@ -348,15 +370,16 @@ describe('aggregatePullRequests', () => {
         const result = [
             {
                 repository: {
-                    html_url: 'https://github.com/user/repo1',
-                    full_name: 'Repo 1',
-                    stargazers_count: 1,
-                    language: 'JavaScript',
+                    html_url: 'https://github.com/user/repo3',
+                    full_name: 'Repo 3',
+                    stargazers_count: 2,
+                    language: 'Go',
                 },
-                open: 1,
-                closed: 2,
-                merged: 0,
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%201',
+                open: 0,
+                closed: 1,
+                merged: 1,
+                updated_at: new Date(6),
+                html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%203',
             },
             {
                 repository: {
@@ -368,19 +391,21 @@ describe('aggregatePullRequests', () => {
                 open: 2,
                 closed: 0,
                 merged: 0,
+                updated_at: new Date(4),
                 html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%202',
             },
             {
                 repository: {
-                    html_url: 'https://github.com/user/repo3',
-                    full_name: 'Repo 3',
-                    stargazers_count: 2,
-                    language: 'Go',
+                    html_url: 'https://github.com/user/repo1',
+                    full_name: 'Repo 1',
+                    stargazers_count: 1,
+                    language: 'JavaScript',
                 },
-                open: 0,
-                closed: 1,
-                merged: 1,
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%203',
+                open: 1,
+                closed: 2,
+                merged: 0,
+                updated_at: new Date(2),
+                html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%201',
             },
         ];
 
@@ -430,6 +455,7 @@ describe('aggregateIssues', () => {
     });
 
     it('fetches pages', async () => {
+        const now = new Date();
         window.fetch.mockImplementation((url) => {
             switch (url) {
             case 'https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest':
@@ -439,6 +465,7 @@ describe('aggregateIssues', () => {
                             repository_url: 'https://api.github.com/repos/user/repo1',
                             author_association: 'CONTRIBUTOR',
                             state: 'open',
+                            updated_at: now,
                         },
                     ],
                 }, {
@@ -455,6 +482,7 @@ describe('aggregateIssues', () => {
                             repository_url: 'https://api.github.com/repos/user/repo1',
                             author_association: 'CONTRIBUTOR',
                             state: 'closed',
+                            updated_at: now,
                         },
                     ],
                 }, {
@@ -486,6 +514,7 @@ describe('aggregateIssues', () => {
                 },
                 open: 1,
                 closed: 1,
+                updated_at: now,
                 html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%201',
             },
         ];
@@ -494,6 +523,7 @@ describe('aggregateIssues', () => {
     });
 
     it('filters owned', async () => {
+        const now = new Date();
         window.fetch.mockImplementation((url) => {
             switch (url) {
             case 'https://api.github.com/search/issues?per_page=100&q=type%3Aissue%20author%3Atest':
@@ -503,11 +533,19 @@ describe('aggregateIssues', () => {
                             repository_url: 'https://api.github.com/repos/user/repo1',
                             author_association: 'CONTRIBUTOR',
                             state: 'open',
+                            updated_at: now,
                         },
                         {
                             repository_url: 'https://api.github.com/repos/user/repo2',
                             author_association: 'OWNER',
                             state: 'closed',
+                            updated_at: now,
+                        },
+                        {
+                            repository_url: 'https://api.github.com/repos/user/repo3',
+                            author_association: 'MEMBER',
+                            state: 'open',
+                            updated_at: now,
                         },
                     ],
                 });
@@ -532,6 +570,7 @@ describe('aggregateIssues', () => {
             },
             open: 1,
             closed: 0,
+            updated_at: now,
             html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%201',
         }];
 
@@ -548,26 +587,31 @@ describe('aggregateIssues', () => {
                             repository_url: 'https://api.github.com/repos/user/repo1',
                             author_association: 'CONTRIBUTOR',
                             state: 'open',
+                            updated_at: new Date(0),
                         },
                         {
                             repository_url: 'https://api.github.com/repos/user/repo1',
                             author_association: 'CONTRIBUTOR',
                             state: 'closed',
+                            updated_at: new Date(1),
                         },
                         {
                             repository_url: 'https://api.github.com/repos/user/repo2',
                             author_association: 'CONTRIBUTOR',
                             state: 'open',
+                            updated_at: new Date(2),
                         },
                         {
                             repository_url: 'https://api.github.com/repos/user/repo3',
                             author_association: 'CONTRIBUTOR',
                             state: 'closed',
+                            updated_at: new Date(3),
                         },
                         {
                             repository_url: 'https://api.github.com/repos/user/repo3',
                             author_association: 'CONTRIBUTOR',
                             state: 'closed',
+                            updated_at: new Date(4),
                         },
                     ],
                 });
@@ -607,18 +651,8 @@ describe('aggregateIssues', () => {
                 },
                 open: 0,
                 closed: 2,
+                updated_at: new Date(4),
                 html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%203',
-            },
-            {
-                repository: {
-                    html_url: 'https://github.com/user/repo1',
-                    full_name: 'Repo 1',
-                    stargazers_count: 1,
-                    language: 'JavaScript',
-                },
-                open: 1,
-                closed: 1,
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%201',
             },
             {
                 repository: {
@@ -629,7 +663,20 @@ describe('aggregateIssues', () => {
                 },
                 open: 1,
                 closed: 0,
+                updated_at: new Date(2),
                 html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%202',
+            },
+            {
+                repository: {
+                    html_url: 'https://github.com/user/repo1',
+                    full_name: 'Repo 1',
+                    stargazers_count: 1,
+                    language: 'JavaScript',
+                },
+                open: 1,
+                closed: 1,
+                updated_at: new Date(1),
+                html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%201',
             },
         ];
 
