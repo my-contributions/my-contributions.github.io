@@ -204,7 +204,9 @@ describe('aggregatePullRequests', () => {
                 closed: 1,
                 merged: 0,
                 updated_at: now,
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%201',
+                closed_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%201%20is%3Aclosed',
+                open_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%201%20is%3Aopen',
+                merged_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%201%20is%3Amerged',
             },
         ];
 
@@ -263,7 +265,9 @@ describe('aggregatePullRequests', () => {
                 closed: 0,
                 merged: 0,
                 updated_at: now,
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%201',
+                closed_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%201%20is%3Aclosed',
+                open_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%201%20is%3Aopen',
+                merged_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%201%20is%3Amerged',
             },
         ];
 
@@ -379,7 +383,9 @@ describe('aggregatePullRequests', () => {
                 closed: 1,
                 merged: 1,
                 updated_at: new Date(6),
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%203',
+                closed_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%203%20is%3Aclosed',
+                open_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%203%20is%3Aopen',
+                merged_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%203%20is%3Amerged',
             },
             {
                 repository: {
@@ -392,7 +398,9 @@ describe('aggregatePullRequests', () => {
                 closed: 0,
                 merged: 0,
                 updated_at: new Date(4),
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%202',
+                closed_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%202%20is%3Aclosed',
+                open_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%202%20is%3Aopen',
+                merged_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%202%20is%3Amerged',
             },
             {
                 repository: {
@@ -405,7 +413,9 @@ describe('aggregatePullRequests', () => {
                 closed: 2,
                 merged: 0,
                 updated_at: new Date(2),
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Apr%20author%3Atest%20repo%3ARepo%201',
+                closed_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%201%20is%3Aclosed',
+                open_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%201%20is%3Aopen',
+                merged_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Apr%20repo%3ARepo%201%20is%3Amerged',
             },
         ];
 
@@ -515,7 +525,8 @@ describe('aggregateIssues', () => {
                 open: 1,
                 closed: 1,
                 updated_at: now,
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%201',
+                closed_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Aissue%20repo%3ARepo%201%20is%3Aclosed',
+                open_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Aissue%20repo%3ARepo%201%20is%3Aopen',
             },
         ];
 
@@ -571,7 +582,8 @@ describe('aggregateIssues', () => {
             open: 1,
             closed: 0,
             updated_at: now,
-            html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%201',
+            closed_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Aissue%20repo%3ARepo%201%20is%3Aclosed',
+            open_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Aissue%20repo%3ARepo%201%20is%3Aopen',
         }];
 
         await expect(github.aggregateIssues()).resolves.toEqual(result);
@@ -652,7 +664,8 @@ describe('aggregateIssues', () => {
                 open: 0,
                 closed: 2,
                 updated_at: new Date(4),
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%203',
+                closed_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Aissue%20repo%3ARepo%203%20is%3Aclosed',
+                open_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Aissue%20repo%3ARepo%203%20is%3Aopen',
             },
             {
                 repository: {
@@ -664,7 +677,8 @@ describe('aggregateIssues', () => {
                 open: 1,
                 closed: 0,
                 updated_at: new Date(2),
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%202',
+                closed_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Aissue%20repo%3ARepo%202%20is%3Aclosed',
+                open_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Aissue%20repo%3ARepo%202%20is%3Aopen',
             },
             {
                 repository: {
@@ -676,7 +690,8 @@ describe('aggregateIssues', () => {
                 open: 1,
                 closed: 1,
                 updated_at: new Date(1),
-                html_url: 'https://github.com/search?utf8=✓&q=type%3Aissue%20author%3Atest%20repo%3ARepo%201',
+                closed_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Aissue%20repo%3ARepo%201%20is%3Aclosed',
+                open_html_url: 'https://github.com/search?utf8=✓&q=author%3Atest%20type%3Aissue%20repo%3ARepo%201%20is%3Aopen',
             },
         ];
 
