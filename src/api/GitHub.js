@@ -132,9 +132,12 @@ export default class GitHub {
         );
     }
 
-    _htmlURL(type, repo) {
-        const q = encodeURIComponent(`type:${type} author:${this._author} repo:${repo}`);
-        return 'https://github.com/search?utf8=✓&q=' + q;
+    _htmlURL(args) {
+        let query = `author:${this._author}`;
+        for (const i in  args) {
+            query += ` ${i}:${args[i]}`;
+        }
+        return 'https://github.com/search?utf8=✓&q=' + encodeURIComponent(query);
     }
 
     async _getAccessToken(code) {
@@ -207,7 +210,21 @@ export default class GitHub {
                 closed: entry[1].closed,
                 merged: entry[1].merged,
                 updated_at: entry[1].updated_at,
-                html_url: this._htmlURL('pr', repository.full_name),
+                open_html_url: this._htmlURL({
+                    type: 'pr',
+                    repo: repository.full_name,
+                    is: 'open',
+                }),
+                closed_html_url: this._htmlURL({
+                    type: 'pr',
+                    repo: repository.full_name,
+                    is: 'closed',
+                }),
+                merged_html_url: this._htmlURL({
+                    type: 'pr',
+                    repo: repository.full_name,
+                    is: 'merged',
+                }),
             };
         });
 
@@ -227,7 +244,16 @@ export default class GitHub {
                 open: entry[1].open,
                 closed: entry[1].closed,
                 updated_at: entry[1].updated_at,
-                html_url: this._htmlURL('issue', repository.full_name),
+                open_html_url: this._htmlURL({
+                    type: 'issue',
+                    repo: repository.full_name,
+                    is: 'open',
+                }),
+                closed_html_url: this._htmlURL({
+                    type: 'issue',
+                    repo:repository.full_name,
+                    is: 'closed',
+                }),
             };
         });
 

@@ -16,8 +16,8 @@ export default class IssuesItem extends React.PureComponent {
                         html_url={this.props.item.repository.html_url}
                     />
                     <div className="d-inline-flex flex-justify-end">
-                        <RepositoryCounter value={this.props.item.open} html_url={this.props.item.html_url} text="open"/>
-                        <RepositoryCounter value={this.props.item.closed} html_url={this.props.item.html_url} text="closed"/>
+                        <RepositoryCounter value={this.props.item.open} html_url={this.props.item.open_html_url} text="open"/>
+                        <RepositoryCounter value={this.props.item.closed} html_url={this.props.item.closed_html_url} text="closed"/>
                     </div>
                 </div>
                 <div className="d-flex flex-justify-between text-gray">
@@ -45,6 +45,7 @@ IssuesItem.propTypes = {
         open: PropTypes.number.isRequired,
         closed: PropTypes.number.isRequired,
         updated_at: PropTypes.instanceOf(Date).isRequired,
-        html_url: PropTypes.string.isRequired,
+        open_html_url: PropTypes.string.isRequired,
+        closed_html_url: PropTypes.string.isRequired,
     }).isRequired,
 };
