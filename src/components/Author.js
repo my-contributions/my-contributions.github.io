@@ -7,6 +7,7 @@ import React from 'react';
 import AuthorName from './AuthorName';
 import AuthorBio from './AuthorBio';
 import AuthorLocation from './AuthorLocation';
+import Tweet from './Tweet';
 
 export default class Author extends React.PureComponent {
     constructor(props) {
@@ -42,6 +43,7 @@ export default class Author extends React.PureComponent {
                     <AuthorBio text={this.state.author.bio}/>
                     <AuthorLocation text={this.state.author.location}/>
                 </div>
+                <Tweet/>
             </div>
         );
     }
