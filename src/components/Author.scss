@@ -16,4 +16,7 @@
 .author-details {
   @extend .flex-row;
   @extend .pl-3;
+  @extend .mr-3;
+
+  width: 550px;
 }
