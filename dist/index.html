@@ -13,10 +13,40 @@
     <meta charset="utf-8">
     <title>Show off your open source contributions and check out others</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        .content {
+            flex: 1 0 auto;
+        }
+        footer {
+            flex-shrink: 0;
+            width: 900px;
+            align-self: center;
+            padding: 30px 0px 10px;
+        }
+        footer ul {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            list-style: none;
+        }
+    </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root" class="content"></div>
     <script src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script src="bundle.js"></script>
+    <footer class="text-small text-gray">
+        <ul>
+            <li>Made by <a class="no-underline" href="https://github.com/31z4">Elisey Zanko</a></li>
+            <li>This project is not affiliated with the GitHub company in any way</li>
+        </ul>
+    </footer>
 </body>
 </html>
