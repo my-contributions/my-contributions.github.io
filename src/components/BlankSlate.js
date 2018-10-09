@@ -6,11 +6,20 @@ import 'primer-marketing/index.scss';
 import React from 'react';
 import AuthorInput from './AuthorInput';
 
+import MergeIcon from 'octicons/build/svg/git-merge.svg';
+import PullRequestIcon from 'octicons/build/svg/git-pull-request.svg';
+import IssueClosedIcon from 'octicons/build/svg/issue-closed.svg';
+import IssueOpenedIcon from 'octicons/build/svg/issue-opened.svg';
+
 export default class BlankSlate extends React.PureComponent {
     render() {
         return (
-            <div className="blankslate blankslate-clean-background">
-                <p className="alt-lead mb-3">Show off your open source contributions and check out others</p>
+            <div className="blankslate blankslate-clean-background pt-8">
+                <MergeIcon width={48} height={48} fill="#959da5"/>
+                <IssueOpenedIcon width={48} height={48} fill="#959da5"/><br/>
+                <IssueClosedIcon width={48} height={48} fill="#959da5"/>
+                <PullRequestIcon width={48} height={48} fill="#959da5"/>
+                <p className="alt-lead my-3">Show off your open source contributions and check out others</p>
                 <AuthorInput showButton/>
             </div>
         );
