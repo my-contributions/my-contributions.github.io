@@ -10,9 +10,9 @@ import Issues from './Issues';
 export default class Results extends React.PureComponent {
     render() {
         return (
-            <div>
+            <div className="results">
                 <Author github={this.props.github}/>
-                <div className="results">
+                <div className="contributions">
                     <PullRequests github={this.props.github}/>
                     <Issues github={this.props.github}/>
                 </div>

@@ -28,7 +28,11 @@ export default class PullRequests extends React.PureComponent {
         let items;
 
         if (this.state.items == null) {
-            items = 'Loading...';
+            items = (
+                <div className="blankslate">
+                    Loading...
+                </div>
+            );
         }
         else if (this.state.items.length) {
             items = this.state.items.map((item) =>
@@ -36,7 +40,11 @@ export default class PullRequests extends React.PureComponent {
             );
         }
         else {
-            items = 'There are no pull requests';
+            items = (
+                <div className="blankslate">
+                    There are no pull requests
+                </div>
+            );
         }
 
         return (

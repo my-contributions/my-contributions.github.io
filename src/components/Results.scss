@@ -1,9 +1,17 @@
 @import "~primer-support/lib/mixins/layout.scss";
 @import "~primer-support/lib/variables/layout.scss";
 @import "~primer-utilities/lib/margin.scss";
+@import "~primer-utilities/lib/padding.scss";
 
 .results {
   @extend .mx-auto;
 
+  width: 800px;
+}
+
+.contributions {
+  @extend .pl-4;
+
+  display: inline-block;
   width: 600px;
 }

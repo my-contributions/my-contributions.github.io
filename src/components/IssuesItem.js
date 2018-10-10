@@ -25,8 +25,8 @@ export default class IssuesItem extends React.PureComponent {
                         <RepositoryLanguage value={this.props.item.repository.language}/>
                         <RepositoryStars value={this.props.item.repository.stargazers_count}/>
                     </div>
-                    <div>
-                        Updated {moment(this.props.item.updated_at).fromNow()}
+                    <div className="f6 mt-1">
+                        {moment(this.props.item.updated_at).fromNow()}
                     </div>
                 </div>
             </div>
