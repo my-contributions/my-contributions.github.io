@@ -28,7 +28,11 @@ export default class Issues extends React.PureComponent {
         let items;
 
         if (this.state.items == null) {
-            items = 'Loading...';
+            items = (
+                <div className="blankslate">
+                    Loading...
+                </div>
+            );
         }
         else if (this.state.items.length) {
             items = this.state.items.map((item) =>
@@ -36,7 +40,11 @@ export default class Issues extends React.PureComponent {
             );
         }
         else {
-            items = 'There are no issues';
+            items = (
+                <div className="blankslate">
+                    There are no issues
+                </div>
+            );
         }
 
         return (

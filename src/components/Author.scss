@@ -1,22 +1,12 @@
 @import "~primer-support/lib/mixins/layout.scss";
 @import "~primer-support/lib/variables/layout.scss";
-@import "~primer-utilities/lib/visibility-display.scss";
-@import "~primer-utilities/lib/flexbox.scss";
 @import "~primer-utilities/lib/margin.scss";
-@import "~primer-utilities/lib/padding.scss";
+@import "~primer-utilities/lib/layout.scss";
 
 .author {
-  @extend .d-flex;
-  @extend .mx-auto;
   @extend .mt-3;
+  @extend .v-align-top;
 
-  width: 800px;
-}
-
-.author-details {
-  @extend .flex-row;
-  @extend .pl-3;
-  @extend .mr-3;
-
-  width: 550px;
+  display: inline-block;
+  text-align: right;
 }

@@ -14,7 +14,7 @@ export default class RepositoryLanguage extends React.PureComponent {
             backgroundColor: GitHubColors.get(this.props.value, true).color,
         };
         return (
-            <div className="f5 flex-items-center mr-3">
+            <div className="f6 flex-items-center mr-3 mt-1">
                 <span className="repository-language" style={style}/>&nbsp;{this.props.value}
             </div>
         );

@@ -8,7 +8,8 @@
 @import "~primer-utilities/lib/typography.scss";
 
 .repository-stars {
-  @extend .f5;
+  @extend .mt-1;
+  @extend .f6;
   @extend .d-flex;
   @extend .flex-items-center;
 

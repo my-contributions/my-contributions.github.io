@@ -5,8 +5,6 @@ import PropTypes from 'prop-types';
 import GitHub from '../api/GitHub';
 import React from 'react';
 import AuthorName from './AuthorName';
-import AuthorBio from './AuthorBio';
-import AuthorLocation from './AuthorLocation';
 import Tweet from './Tweet';
 
 export default class Author extends React.PureComponent {
@@ -32,17 +30,13 @@ export default class Author extends React.PureComponent {
 
         return this.state.author && (
             <div className="author">
-                <img className="avatar"
+                <img className="avatar mb-2"
                     alt={this.state.author.name}
                     src={this.state.author.avatar_url}
-                    height="72"
-                    width="72"
+                    height="190"
+                    width="190"
                 />
-                <div className="author-details">
-                    <AuthorName name={this.state.author.name} login={this.state.author.login} html_url={this.state.author.html_url}/>
-                    <AuthorBio text={this.state.author.bio}/>
-                    <AuthorLocation text={this.state.author.location}/>
-                </div>
+                <AuthorName name={this.state.author.name} login={this.state.author.login} html_url={this.state.author.html_url}/>
                 <Tweet/>
             </div>
         );
