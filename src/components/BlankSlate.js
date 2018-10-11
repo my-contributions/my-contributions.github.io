@@ -21,6 +21,7 @@ export default class BlankSlate extends React.PureComponent {
                 <PullRequestIcon width={48} height={48} fill="#959da5"/>
                 <p className="alt-lead my-3">Show off your open source contributions and check out others</p>
                 <AuthorInput showButton/>
+                <p className="alt-h6 mt-2 text-gray">For example <a className="no-underline" href="?author=31z4">31z4</a> or <a className="no-underline" href="?author=summerisgone">summerisgone</a></p>
             </div>
         );
     }
