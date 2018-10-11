@@ -1,6 +1,7 @@
 # My Contributions
 
 [![CircleCI](https://circleci.com/gh/my-contributions/my-contributions.github.io.svg?style=shield&circle-token=1372412fd7e77c2b18440520be8954cfe7532b03)](https://circleci.com/gh/my-contributions/my-contributions.github.io)
+[![codecov](https://codecov.io/gh/my-contributions/my-contributions.github.io/branch/dev/graph/badge.svg)](https://codecov.io/gh/my-contributions/my-contributions.github.io)
 
 [My Contributions](https://my-contributions.github.io) represents a simple aggregated view of all pull requests and issues a GitHub user ever created. It includes only repositories that are now owned by the user.
 
