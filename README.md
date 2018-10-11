@@ -3,7 +3,7 @@
 [![CircleCI](https://circleci.com/gh/my-contributions/my-contributions.github.io.svg?style=shield&circle-token=1372412fd7e77c2b18440520be8954cfe7532b03)](https://circleci.com/gh/my-contributions/my-contributions.github.io)
 [![codecov](https://codecov.io/gh/my-contributions/my-contributions.github.io/branch/dev/graph/badge.svg)](https://codecov.io/gh/my-contributions/my-contributions.github.io)
 
-[My Contributions](https://my-contributions.github.io) represents a simple aggregated view of all pull requests and issues a GitHub user ever created. It includes only repositories that are now owned by the user.
+[My Contributions](https://my-contributions.github.io) represents a simple aggregated view of all pull requests and issues a GitHub user ever created. It includes only repositories that are not owned by the user.
 
 <p align="center"><a href="https://my-contributions.github.io/?author=31z4"><img src="example.png" width="850"></a></p>
 <h6 align="center">
