@@ -11,7 +11,9 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           key: dependency-cache-
 
-      - run: yarn install
+      - run: |
+          yarn install
+          sudo yarn global add codecov --prefix /usr/local
 
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
@@ -20,7 +22,9 @@ jobs:
 
       - run: yarn lint --format junit -o reports/junit/js-lint-results.xml
       - run:
-          command: yarn test --ci --testResultsProcessor="jest-junit"
+          command: |
+            yarn test --ci --testResultsProcessor="jest-junit"
+            codecov
           environment:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - run: yarn build
