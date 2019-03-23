@@ -5,7 +5,9 @@ export default class AuthorName extends React.PureComponent {
     render() {
         return (
             <div>
-                <a className="h3 link-gray-dark no-underline" href={this.props.html_url}>{this.props.name || this.props.login}</a>
+                <a className="h3 link-gray-dark no-underline author-name" href={this.props.html_url}>
+                    {this.props.name || this.props.login}
+                </a>
             </div>
         );
     }
