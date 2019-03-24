@@ -16,7 +16,8 @@ export default class ErrorBoundary extends React.PureComponent {
     }
 
     render() {
-        if (this.state.error) {
+        // Ignore errors related to Twitter widget.
+        if (this.state.error && !this.state.error.toString().includes('twttr')) {
             return <FlashError error={this.state.error}/>;
         }
         return this.props.children;
