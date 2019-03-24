@@ -354,7 +354,7 @@ export default class GitHub {
             throw e;
         }
 
-        return results.sort((a, b) => a.updated_at < b.updated_at);
+        return results.sort((a, b) => b.updated_at - a.updated_at);
     }
 
     async aggregateIssues() {
@@ -373,7 +373,7 @@ export default class GitHub {
             throw e;
         }
 
-        return results.sort((a, b) => a.updated_at < b.updated_at);
+        return results.sort((a, b) => b.updated_at - a.updated_at);
     }
 
     async getUser() {
