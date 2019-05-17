@@ -8,6 +8,11 @@
         "OAUTH_GATEWAY_URL": "https://exmaple.com",
         "OAUTH_CLIENT_ID": "1234"
     },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended"
