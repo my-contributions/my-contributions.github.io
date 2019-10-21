@@ -5,13 +5,21 @@
 
 .results {
   @extend .mx-auto;
-
-  width: 800px;
+  width: 100%;
+  @include breakpoint('lg') {
+    width: 800px;
+  }
 }
 
 .contributions {
-  @extend .pl-4;
+  display: block;
+  width: 100%;
+  @extend .px-1;
 
-  display: inline-block;
-  width: 600px;
+  @include breakpoint('md') {
+    width: 600px;
+    display: inline-block;
+    margin: auto;
+    padding: 0;
+  }
 }
