@@ -11,7 +11,8 @@
     "build": "webpack --config webpack.prod.js",
     "start": "webpack-dev-server --open --config webpack.dev.js",
     "test": "jest",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "deploy": "git subtree push --prefix dist origin master"
   },
   "dependencies": {
     "github-colors": "^2.2.17",
