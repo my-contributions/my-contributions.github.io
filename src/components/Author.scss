@@ -7,7 +7,13 @@
   @extend .mt-3;
   @extend .v-align-top;
 
-  display: inline-block;
   text-align: right;
   max-width: 190px;
+  
+  display: block;
+  margin: auto;
+  @include breakpoint('md') {
+    display: inline-block;
+    margin: initial;
+  }
 }

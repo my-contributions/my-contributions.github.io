@@ -18,5 +18,10 @@
   @extend .flex-justify-between;
   @extend .mx-auto;
 
-  width: 900px;
+  width: 100%;
+  padding: 0 1em;
+  
+  @include breakpoint('lg') {
+    width: 900px;
+  }
 }
