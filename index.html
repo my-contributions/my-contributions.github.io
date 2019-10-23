@@ -11,6 +11,8 @@
         gtag('config', 'UA-127037785-1');
     </script>
     <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <title>Show off your open source contributions and check out others</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <style>
@@ -26,14 +28,27 @@
         }
         .footer {
             flex-shrink: 0;
-            width: 900px;
+            width: 100%;
+            padding: 0 1em;
             align-self: center;
-            padding: 30px 0px 10px;
         }
         .footer-content {
             flex: 1;
             display: flex;
             justify-content: space-between;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        @media (min-width: 1012px) {
+            .footer {
+                width: 900px;
+                padding: 30px 0px 10px;
+            }
+            .footer-content {
+                flex-direction: row;
+                align-items: center;
+            }
         }
     </style>
 </head>
